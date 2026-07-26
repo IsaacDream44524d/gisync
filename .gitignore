@@ -12,6 +12,8 @@ instance/
 
 .env
 
+app/static/dist/
+
 .vscode/
 
 .DS_store
