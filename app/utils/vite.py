@@ -1,32 +1,52 @@
-import json
 from pathlib import Path
+import json
 from flask import current_app, url_for
 from markupsafe import Markup
 
-def vite_assets():
-    # 1. Safely build the path to the manifest
-    manifest_path = Path(current_app.static_folder) / "dist" / ".vite" / "manifest.json"
 
-    # 2. Read the manifest file
-    with open(manifest_path, 'r') as file:
-        manifest = json.load(file)
-        
-    entry = manifest.get("src/main-v4.js", {})
-    if not entry:
-        return Markup("") # Return empty string if entry doesn't exist
-        
-    tags = []
+class ViteAssets:
+    def __init__(self):
+        self.manifest_path = (
+            Path(current_app.static_folder)
+            / "dist"
+            / ".vite"
+            / "manifest.json"
+        )
 
-    # 3. Generate CSS tags using Python's url_for directly
-    for css_file in entry.get('css', []):
-        css_url = url_for('static', filename=f"dist/{css_file}")
-        tags.append(f"<link rel='stylesheet' href='{css_url}'>")
+    def loadFile(self):
+        with open(self.manifest_path, "r") as file:
+            manifest = json.load(file)
 
-    # 4. Generate JS tag
-    js_file = entry.get('file')
-    if js_file:
-        js_url = url_for('static', filename=f"dist/{js_file}")
-        tags.append(f"<script type='module' src='{js_url}'></script>")
+        return manifest.get("src/main-v4.js", {})
 
-    # 5. Join safely with safe newlines
-    return Markup("\n".join(tags))
+    @property
+    def cssAsset(self):
+        entry = self.loadFile()
+
+        for css_file in entry.get("css", []):
+            css_url = url_for(
+                "static",
+                filename=f"dist/{css_file}"
+            )
+           
+        return Markup(
+            f"<link rel='stylesheet' href='{css_url}'>"
+        )
+
+    @property
+    def jsAsset(self):
+        entry = self.loadFile()
+
+        js_file = entry.get("file")
+
+        if not js_file:
+            return Markup("")
+
+        js_url = url_for(
+            "static",
+            filename=f"dist/{js_file}"
+        )
+
+        return Markup(
+            f"<script type='module' src='{js_url}'></script>"
+        )

@@ -13,7 +13,7 @@
 //   • Share           → copies current URL to clipboard
 //   • Cancel / Reset  → resets form / closes modal (already native)
 
-import { showToast } from './toast.js';
+
 import { showModal } from './modal.js';
 
 const RX = {

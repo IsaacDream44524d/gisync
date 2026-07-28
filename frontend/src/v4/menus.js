@@ -2,7 +2,7 @@
 // One open menu at a time; clicking outside, pressing Escape, or scrolling
 // closes it.
 
-import { showToast } from './toast.js';
+
 
 let openMenuEl = null;
 let openMenuTrigger = null;

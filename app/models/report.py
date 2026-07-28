@@ -4,12 +4,9 @@ import enum
 from sqlalchemy import UniqueConstraint
 from .file import File
 from .user import User
+from .enums import ReportStatus
 
 
-class ReportStatus(enum.Enum):
-    PENDING = 'pending'
-    RESOLVED = 'resolved'
-    DISMISSES = 'dismissed'
 
 
 class Report(db.Model):

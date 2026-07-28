@@ -1,0 +1,1 @@
+user = db.session.scalar(select(User).options(joinedload(User.post))).all()

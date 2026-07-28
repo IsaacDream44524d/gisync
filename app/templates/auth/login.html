@@ -1,0 +1,115 @@
+{% extends 'auth/form.html' %}
+
+{% block form %}
+
+    <div class="auth-page">
+        <div class="auth-card">
+
+            <div class="auth-left">
+                <div class="brand">
+                    <i class="bi bi-mortarboard-fill"></i>
+                    <div>
+                        <h4>GISync</h4>
+                        <p>All your academic materials synced in one place</p>
+                    </div>
+                </div>
+
+                <div class="hero-image">
+                    <img src="{{ url_for('static', filename='dist/images/img-01.png') }}" alt="Login">
+                </div>
+
+                <div class="welcome-text">
+                    <h2>Welcome Back</h2>
+                    <p>
+                        Login to your account to access your class schedule,
+                        upcoming tests, and download timetables.
+                    </p>
+                </div>
+            </div>
+
+            <div class="auth-right">
+                <form method="POST" action="{{ url_for('auth.login') }}" novalidate>
+
+                    {{ form.hidden_tag() }}
+
+
+                    <h1>Login</h1>
+                    <p class="subtitle">
+                        Enter your credentials to access your account
+                    </p>
+
+                    <div class="form-group">
+
+                        <div class="input-group-custom {% if form.email.errors %}is-invalid{% endif %}">
+                            <i class="bi bi-person"></i>
+                            {{ form.email(placeholder='Email') }}
+                            {% if form.email.errors %}
+                                <i style="font-size: 1rem; font-weight:800;"  class="bi bi-exclamation-triangle"></i>
+                            {% endif %}
+                        </div>
+
+                        {% if form.email.errors %}
+                            <div class="error-feedback">
+                                {% for error in form.email.errors %}
+                                    <small class="form-error">{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                    </div>
+                    
+
+                    <div class="form-group">
+
+                        <div class="input-group-custom {% if form.password.errors %}is-invalid{% endif %}">
+                            <i class="bi bi-lock"></i>
+                            {{ form.password(placeholder='Password') }}
+                            {% if form.password.errors %}
+                                <i style="font-size: 1rem; font-weight:800;"  class="bi bi-exclamation-triangle"></i>
+                            {% endif %}
+                        </div>
+
+                        {% if form.password.errors %}
+                            <div class="error-feedback">
+                                {% for error in form.password.errors %}
+                                    <small class="form-error">{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                    </div>
+                    
+
+                    <div class="options-row">
+                        <div style="display: flex; align-items: center; gap: 5px">
+                            {{ form.remember_me(class='check-box') }}
+                            {{ form.remember_me.label(class='check-box') }}
+                        </div>
+
+                        <a href="{{ url_for('auth.resetRequest') }}">Forgot Password?</a>
+                    </div>
+
+                    <button type="submit" class="login-btn" name="{{ form.submit_btn.name }}" value="{{ form.submit_btn.value }}">
+                        LOGIN
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+
+                    
+                    <div class="divider">
+                        <span>and</span>
+                    </div>
+
+                    <p class="terms">
+                        By logging in, you agree to our
+                        <a href="#">Terms of Service</a>
+                        and
+                        <a href="#">Privacy Policy</a>
+                    </p>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

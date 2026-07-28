@@ -35,9 +35,7 @@ if (document.querySelector('.calendar-grid')) {
 if (document.querySelector('.settings-content')) {
   import('./v4/settings.js').then((m) => m.initSettings());
 }
-if (document.querySelector('[data-date-range], [data-rich-text], [data-multi-select]')) {
-  import('./v4/form-controls.js').then((m) => m.initFormControls());
-}
+
 
 // ────────────────────────
 //  Delegated interactions

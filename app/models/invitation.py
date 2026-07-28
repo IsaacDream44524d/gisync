@@ -1,12 +1,6 @@
 from app.extensions import db
 from datetime import datetime, timezone
-import enum
-
-class UserRole(enum.Enum):
-    STUDENT = 'student'
-    ADMIN = 'admin'
-    SUPER_ADMIN = 'super_admin'
-
+from .enums import UserRole
 
 class Invitation(db.Model):
     __tablename__ = 'invitation'

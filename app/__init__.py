@@ -1,8 +1,7 @@
-from flask import Flask
+from flask import Flask, url_for, redirect
 from app.config import Config
-from app.utils.vite import vite_assets
+from app.utils.vite import ViteAssets
 from app.extensions import migrate, db, login_manager, bcrypt
-from app import models
 from dotenv import load_dotenv
 
 
@@ -16,7 +15,14 @@ def create_app():
 
     app.config.from_pyfile('config.py', silent=True)
 
-    app.jinja_env.globals["vite_assets"] = vite_assets
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_size': 5, #-> keeps 5 db connections open and reADYD
+        'pool_recycle': 1800, #-> closes and refresh any connection that lives forr 1800s to prevent timeout
+        'max_overflow': 10 #-> allow 10 extra connection plus pool size when traffic spikes
+    }
+
+    # for development only
+    app.config['SQLALCHEMY_ECHO'] = True
 
 
     db.init_app(app)
@@ -25,7 +31,18 @@ def create_app():
 
     migrate.init_app(app, db)
 
-    from app.routes.admin import admin_blueprint
-    app.register_blueprint(admin_blueprint)
+    with app.app_context():
+        app.jinja_env.globals["vite"] = ViteAssets()
+
+
+    from app.routes.admin import admin
+    from app.routes.auth import auth
+    
+    app.register_blueprint(admin, url_prefix='/admin')
+    app.register_blueprint(auth, url_prefix='/auth')
+
+    @app.route('/')
+    def index():
+        return redirect(url_for('auth.login'))
 
     return app

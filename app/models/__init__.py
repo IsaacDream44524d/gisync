@@ -5,5 +5,6 @@ from .course import Course
 from .report import Report
 from .downloadLog import DownloadLog
 from .file import File
+from .enums import UserRole, ReportStatus
 
-__all__ = ['User', 'Invitation', 'Category', 'Course', 'Report', 'DownloadLog', 'File']
+__all__ = ['User', 'Invitation', 'Category', 'Course', 'Report', 'DownloadLog', 'File', 'UserRole', 'ReportStatus']
