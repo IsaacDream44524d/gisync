@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import { visualizer } from 'rollup-plugin-visualizer';
-import { renderShell, parseShellAttrs } from './src/v4/shell-render.js';
 import { resolve } from 'node:path';
 
 

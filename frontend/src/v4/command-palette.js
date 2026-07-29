@@ -5,7 +5,6 @@
 // scorer that's good enough for ~50 items.
 
 import { NAV } from './shell-render.js';
-import { showToast } from './toast.js';
 import { showModal } from './modal.js';
 
 let host = null;

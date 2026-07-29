@@ -9,18 +9,11 @@ admin = Blueprint('admin', __name__, url_prefix='/admin')
 @login_required
 @role_required(UserRole.SUPER_ADMIN)
 def dashboard():
-    print("*****************INSIDE PROTECTED ROUTE")
-    print(f"*************current user: {current_user}")
-    print(f"***************Authenticated: {current_user.is_authenticated}")
     return render_template('admin/dashboard.html')
 
 
-
-@admin.route('/session-test')
-def test():
-    from flask_login import current_user
-
-    return {
-        "Authenticated": current_user.is_authenticated,
-        "user-id": current_user.id if current_user.is_authenticated else None
-    }
+@admin.route('/user-management')
+@login_required
+@role_required(UserRole.SUPER_ADMIN)
+def userManagement():
+    return render_template('admin/user_management.html')
