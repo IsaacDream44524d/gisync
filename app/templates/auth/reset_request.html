@@ -4,8 +4,8 @@
     <div class="auth-page">
         <div class="auth-card">
 
-            <div class="auth-left">
-                <div class="brand">
+            <div style="position: relative;" class="auth-left">
+                <div style="position: absolute; top:50px; left:50px; padding:10px 12px;" class="brand">
                     <i class="bi bi-mortarboard-fill"></i>
                     <div>
                         <h4>GISync</h4>
@@ -18,17 +18,18 @@
             </div>
 
             <div class="auth-right">
-                <form method="POST" action="{{ url_for('auth.resetRequest') }}" novalidate>
+                <form style="max-width: 486px;" method="POST" action="{{ url_for('auth.resetRequest') }}" novalidate>
 
                     {{ form.hidden_tag() }}
 
 
                     <h1>Reset your password</h1>
                     <p class="subtitle">
-                        The password reset email will be sent to your email box. Please check it
+                        Enter your email address associated with the account
+                        and a password reset email will be sent to your email inbox. Please check it
                     </p>
 
-                    <div class="form-group">
+                    <div style="position: relative;" class="form-group">
 
                         <div class="input-group-custom {% if form.email.errors %}is-invalid{% endif %}">
                             <i class="bi bi-person"></i>
@@ -54,7 +55,8 @@
                         <i class="bi bi-arrow-right"></i>
                     </button>
 
-                    <p class="terms">
+                    <p style="position: absolute; top:50px; right:50px; padding:10px 12px;" class="back-btn">
+                        <i class="bi bi-arrow-left"></i>
                         <a href="{{ url_for('auth.login') }}">Back to login</a>
                     </p>
 

@@ -5,13 +5,15 @@ from flask_login import UserMixin
 from .enums import UserRole
 
 # responsible for session management
+# move it the extensions file
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return db.session.get(User, int(user_id))
 
 
 
-class User(db.Model, UserMixin):
+
+class User(UserMixin, db.Model):
     __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True, index=True)
@@ -23,6 +25,14 @@ class User(db.Model, UserMixin):
     is_active = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False, index=True)
 
+    def setActiveStatus(self, status: bool, commit: bool):
+        self.is_active = bool(status)
+
+        if commit:
+            db.session.commit()
+
+    def get_id(self):
+        return str(self.id)
 
     def hasRole(self, role) -> bool:
         if isinstance(role, str):
@@ -35,7 +45,7 @@ class User(db.Model, UserMixin):
         return self.role == role
 
     def isAdmin(self) -> bool:
-        return self.hasRole('admin') or self.hasRole('super_admin')
+        return self.hasRole('admin')
 
     def isSuperAdmin(self) -> bool:
         return self.hasRole('super_admin')

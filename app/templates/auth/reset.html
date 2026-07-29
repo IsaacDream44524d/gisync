@@ -1,0 +1,90 @@
+{% extends 'auth/form.html' %}
+
+{% block form %}
+    <div class="auth-page">
+        <div class="auth-card">
+
+            <div style="position: relative;" class="auth-left">
+                <div style="position: absolute; top:50px; left:50px; padding:10px 12px;" class="brand">
+                    <i class="bi bi-mortarboard-fill"></i>
+                    <div>
+                        <h4>GISync</h4>
+                    </div>
+                </div>
+
+                <div class="hero-image">
+                    <img src="{{ url_for('static', filename='dist/images/img-01.png') }}" alt="Login">
+                </div>
+            </div>
+
+            <div class="auth-right">
+                <form style="max-width: 500px;" method="POST" action="{{ url_for('auth.reset') }}" novalidate>
+
+                    {{ form.hidden_tag() }}
+
+
+                    <h1>Create password</h1>
+                    <p class="subtitle">
+                        Create your new password below
+                    </p>
+
+                    <div style="position: relative;" class="form-group">
+
+                        <div class="input-group-custom {% if form.password.errors %}is-invalid{% endif %}">
+                            <i class="bi bi-person"></i>
+                            {{ form.password(placeholder='password') }}
+                            {% if form.password.errors %}
+                            <i style="font-size: 1rem; font-weight:800;" class="bi bi-exclamation-triangle"></i>
+                            {% endif %}
+                        </div>
+
+                        {% if form.password.errors %}
+                        <div class="error-feedback">
+                            {% for error in form.password.errors %}
+                            <small class="form-error">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div style="position: relative;" class="form-group">
+
+                        <div class="input-group-custom {% if form.confirm_password.errors %}is-invalid{% endif %}">
+                            <i class="bi bi-person"></i>
+                            {{ form.confirm_password(placeholder='confirm Password') }}
+                            {% if form.confirm_password.errors %}
+                            <i style="font-size: 1rem; font-weight:800;" class="bi bi-exclamation-triangle"></i>
+                            {% endif %}
+                        </div>
+
+                        {% if form.confirm_password.errors %}
+                        <div class="error-feedback">
+                            {% for error in form.confirm_password.errors %}
+                            <small class="form-error">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                    </div>
+
+
+
+                    <button type="submit" class="login-btn" name="{{ form.submit_btn.name }}"
+                        value="{{ form.submit_btn.value }}">
+                        Set password
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+
+                    <p style="position: absolute; top:50px; right:50px; padding:10px 12px;" class="back-btn">
+                        <i class="bi bi-arrow-left"></i>
+                        <a href="{{ url_for('auth.login') }}">Back to login</a>
+                    </p>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

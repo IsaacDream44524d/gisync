@@ -23,6 +23,11 @@ def create_app():
 
     # for development only
     app.config['SQLALCHEMY_ECHO'] = True
+    app.config['SESSION_COOKIES_SAMESITE'] = 'Lax'
+    #FOR DEVELOPMENT ONLY
+
+    app.config['SESSION_COOKIES_HTTPONLY'] = True
+    app.config['REMEMBER_COOKIES_DURATION'] = 3600 * 24 * 7
 
 
     db.init_app(app)
