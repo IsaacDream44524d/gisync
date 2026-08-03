@@ -256,9 +256,8 @@ function openSignOutModal() {
         label: 'Sign out',
         variant: 'primary',
         action: () => {
-          showToast('Signed out', { variant: 'success' });
-          // auth.login 
-          setTimeout(() => { window.location.href = 'login.html'; }, 600);
+          // auth.login
+          setTimeout(() => { window.location.href = window.ROUTES.logout; }, 600);
         }
       }
     ]
@@ -266,10 +265,10 @@ function openSignOutModal() {
 }
 
 const USER_MENU = [
-  { label: 'Profile',            action: () => { window.location.href = 'profile.html'; } },
-  { label: 'Account settings',   action: () => { window.location.href = 'settings.html'; } },
+  { label: 'Profile',            action: () => { window.location.href = window.ROUTES.profile; } },
+  { label: 'Account settings',   action: () => { window.location.href = window.ROUTES.settings; } },
   '-',
-  { label: 'Help & support',     action: () => { window.location.href = 'faq.html'; } },
+  { label: 'Help & support',     action: () => { window.location.href = window.ROUTES.faq; } },
   { label: 'Sign out',           action: openSignOutModal }
 ];
 
@@ -360,26 +359,6 @@ function bindTopbarPanels() {
         }
       });
       openPanel(bell, panel, { className: 'panel-notifications', width: 360 });
-    });
-  }
-
-  const msg = document.querySelector('.tb-messages');
-  if (msg) {
-    msg.addEventListener('click', (e) => {
-      e.preventDefault(); e.stopPropagation();
-      const panel = buildMessagesPanel();
-      panel.addEventListener('click', (ev) => {
-        const row = ev.target.closest('.panel-row');
-        if (row) {
-          ev.stopPropagation();
-          const i = parseInt(row.dataset.i, 10);
-          MESSAGES[i].unread = false;
-          row.classList.remove('unread');
-          row.closest('.menu-popover')?.remove();
-          openMessageDetail(MESSAGES[i]);
-        }
-      });
-      openPanel(msg, panel, { className: 'panel-messages', width: 360 });
     });
   }
 

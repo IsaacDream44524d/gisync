@@ -13,27 +13,27 @@ export const NAV = [
     label: 'General',
     items: [
       {
-        text: 'Dashboards', icon: 'dashboard'
+        text: 'Dashboards', icon: 'dashboard', href: window.ROUTES.dashboard
       },
-      { key: 'calendar', href: 'calendar.html', text: 'Calendar', icon: 'calendar' }
+      { key: 'calendar', href: window.ROUTES.calendar, text: 'Calendar', icon: 'calendar' }
     ]
   },
   {
     label: 'Apps',
     items: [
-      { key: 'kanban',        href: 'kanban.html',        text: 'Kanban',        icon: 'kanban' },
-      { key: 'files',         href: 'file_manager.html',  text: 'Files',         icon: 'files' },
-      { key: 'notifications', href: 'notifications.html', text: 'Notifications', icon: 'bell' }
+      { key: 'kanban',        href: window.ROUTES.workflow,        text: 'Kanban',        icon: 'kanban' },
+      { key: 'files',         href: window.ROUTES.fileManagement,  text: 'Files',         icon: 'files' },
+      { key: 'notifications', href: window.ROUTES.notifications, text: 'Notifications', icon: 'bell' }
     ]
   },
   {
     label: 'Admin',
     items: [
-      { key: 'users',           href: 'contacts.html',         text: 'Contacts',        icon: 'users' },
-      { key: 'user_management', href: "{{url_for('admin.userManagement')}}",  text: 'User management', icon: 'profile' },
-      { key: 'profile',         href: 'profile.html',          text: 'Your profile',    icon: 'profile' },
-      { key: 'settings',        href: 'settings.html',         text: 'Settings',        icon: 'settings' },
-      { key: 'faq',             href: 'faq.html',              text: 'Help center',     icon: 'help' }
+      // { key: 'users',           href: window.ROUTES.class,         text: 'Contacts',        icon: 'users' },
+      { key: 'user_management', href: window.ROUTES.userManagement,  text: 'User management', icon: 'profile' },
+      { key: 'profile',         href: window.ROUTES.profile,          text: 'Your profile',    icon: 'profile' },
+      { key: 'settings',        href: window.ROUTES.settings,         text: 'Settings',        icon: 'settings' },
+      { key: 'faq',             href: window.ROUTES.faq,              text: 'Help center',     icon: 'help' }
     ]
   },
 ];
@@ -100,7 +100,7 @@ export function renderSidebar(activeKey) {
     </div>
   `).join('');
 
-  // put usernama here
+  // put username here
   return `
     <aside class="sidebar" aria-label="Primary navigation">
       <div class="sidebar-brand">

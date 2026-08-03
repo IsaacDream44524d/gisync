@@ -514,6 +514,7 @@
 // stay contained within its grid track instead of pushing the track wider
 // than its share. Critical for tables and chart cards.
 .col-4   { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.col-5   { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .col-3   { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .col-2   { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .col-8-4 { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
@@ -544,6 +545,8 @@
 // col-4 → col-2 first since 4 wide tiles cramp earliest
 @media (max-width: 1200px) {
   .col-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  .col-5 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 // 3-col rows drop to 2 here — at this width with the sidebar visible the
 // content area is ~640px, so 3 cards (~210px each) become uncomfortably
@@ -573,7 +576,7 @@
   // minmax(0, 1fr) — without it a wide intrinsic child (table, code block,
   // long unbroken text) pushes the column wider than the viewport, which
   // forces the mobile browser to scale the whole layout to fit.
-  .col-4, .col-3, .col-2 { grid-template-columns: minmax(0, 1fr); }
+  .col-4, .col-5, .col-3, .col-2 { grid-template-columns: minmax(0, 1fr); }
   .page-wrapper { padding: 12px; }
   body.sidebar-open { overflow: hidden; }
   // Mobile rail mode never applies — drawer handles narrow viewports.

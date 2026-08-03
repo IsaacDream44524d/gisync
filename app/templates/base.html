@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% if title %}
+        <title> {{title}} | GISync</title>
+    {% else %}
+
+    <title>GISync</title>
+    {% endif %}<
+
+    <script>
+        window.ROUTES = {
+            dashboard: "{{ url_for('admin.dashboard') }}",
+            userManagement: "{{ url_for('admin.userManagement') }}",
+            profile: "{{ url_for('admin.profile') }}",
+            settings: "{{ url_for('admin.settings') }}",
+            faq: "{{ url_for('admin.settings') }}",
+            calendar: "{{ url_for('admin.calendar') }}",
+            workflow: "{{ url_for('admin.workflow') }}",
+            notifications: "{{ url_for('admin.notifications') }}",
+            fileManagement: "{{ url_for('admin.fileManagement') }}",
+            logout: "{{ url_for('auth.logout') }}"
+        }
+    </script>
+
+    {{ vite.cssAsset }}
+    {{ vite.jsAsset }}
+
+</head>
+<body data-shell="admin" data-page="dashboard" data-breadcrumb="Home > Dashboard">
+
+
+    {% block content %}
+        
+    {% endblock %}
+    
+</body>
+</html>

@@ -11,6 +11,8 @@ from flask_login import login_user, current_user, logout_user
 from sqlalchemy import select
 from app.extensions import db
 from app.services.send_email import sendResetEmail
+from flask_login import current_user, login_required
+from app.utils.decorators import role_required
 
 
 auth = Blueprint('auth', __name__, url_prefix='/auth')
@@ -27,20 +29,11 @@ def login():
         stmt = select(User).where(User.email == form.email.data)
         user = db.session.execute(stmt).scalar_one_or_none()
 
-        if user is None and not user.checkPassword(form.password.data):
+        if user is None or not user.checkPassword(form.password.data):
             flash('Invalid credentials', 'warning')
-            return redirect('auth.login')
-
-        print("*****************BEFORE login_user")
-        print(f"*************current user: {current_user}")
-        print(f"***************Authenticated: {current_user.is_authenticated}")
-
+            return redirect(url_for('auth.login'))
        
         login_user(user, remember=form.remember_me.data)
-
-        print("*****************AFTER login_user")
-        print(f"*************current user: {current_user}")
-        print(f"***************Authenticated: {current_user.is_authenticated}")
 
         #redirect user to the page they wanted
         next_page = request.args.get('next')
@@ -52,8 +45,12 @@ def login():
     return render_template('auth/login.html', title='Login', form=form)
                 
 
-
-        
+@auth.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out', 'success')
+    return redirect(url_for('auth.login'))
 
     
      

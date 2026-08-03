@@ -1,6 +1,6 @@
 from functools import wraps
 from flask_login import current_user
-from flask import abort
+from flask import abort, render_template
 
 def role_required(*roles):
     def wrapper(f):

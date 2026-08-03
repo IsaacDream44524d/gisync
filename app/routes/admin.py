@@ -9,7 +9,7 @@ admin = Blueprint('admin', __name__, url_prefix='/admin')
 @login_required
 @role_required(UserRole.SUPER_ADMIN)
 def dashboard():
-    return render_template('admin/dashboard.html')
+    return render_template('admin/dashboard.html', title='dashboard')
 
 
 @admin.route('/user-management')
@@ -17,3 +17,59 @@ def dashboard():
 @role_required(UserRole.SUPER_ADMIN)
 def userManagement():
     return render_template('admin/user_management.html')
+
+@admin.route('/file-management')
+@login_required
+@role_required(UserRole.SUPER_ADMIN)
+def fileManagement():
+    return render_template('admin/file_manager.html')
+
+@admin.route('/workflow')
+@login_required
+@role_required(UserRole.SUPER_ADMIN)
+def workflow():
+    return render_template('admin/kanban.html')
+
+# all users routes relocate
+@admin.route('/profile')
+@login_required
+@role_required(UserRole.SUPER_ADMIN)
+def profile():
+    return render_template('profile.html')
+
+
+
+@admin.route('/settings')
+@login_required
+@role_required(UserRole.SUPER_ADMIN)
+def settings():
+    return render_template('settings.html')
+
+
+
+@admin.route('/faq')
+@login_required
+@role_required(UserRole.SUPER_ADMIN)
+def faq():
+    return render_template('faq.html')
+
+
+
+
+
+
+@admin.route('/notifications')
+@login_required
+@role_required(UserRole.SUPER_ADMIN)
+def notifications():
+    return render_template('notifications.html')
+
+
+@admin.route('/calendar')
+@login_required
+@role_required(UserRole.SUPER_ADMIN)
+def calendar():
+    return render_template('calendar.html')
+
+
+

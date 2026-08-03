@@ -50,6 +50,7 @@ class User(UserMixin, db.Model):
     def isSuperAdmin(self) -> bool:
         return self.hasRole('super_admin')
 
+    @property
     def setPassword(self, password):
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
 

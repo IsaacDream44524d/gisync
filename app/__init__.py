@@ -3,6 +3,7 @@ from app.config import Config
 from app.utils.vite import ViteAssets
 from app.extensions import migrate, db, login_manager, bcrypt
 from dotenv import load_dotenv
+from app.utils.handers import errors
 
 
 load_dotenv()
@@ -45,6 +46,7 @@ def create_app():
     
     app.register_blueprint(admin, url_prefix='/admin')
     app.register_blueprint(auth, url_prefix='/auth')
+    app.register_blueprint(errors)
 
     @app.route('/')
     def index():

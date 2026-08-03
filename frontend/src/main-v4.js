@@ -136,3 +136,6 @@ document.addEventListener('submit', (e) => {
 
 // Topbar search box opens the command palette — wired by initCommandPalette.
 // Page-actions (Print / Export / Compose / Add / etc.) wired via initPageActions.
+
+// flask app urls
+
