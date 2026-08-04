@@ -2,6 +2,7 @@
 
 
 {% block content %}
+<!-- add these style in the css file -->
 <style>
   .box {
     display: flex;
@@ -83,9 +84,9 @@
           <div class="stat-content">
             <div class="stat-label">Total Students</div>
             <div class="stat-value-row">
-              <span class="stat-value">50</span>
+              <span class="stat-value">{{ stats.total_students }}</span>
             </div>
-            <div class="stat-subtext">10 new this week</div>
+            <div class="stat-subtext">+1 owner</div>
           </div>
 
         </div>
@@ -102,10 +103,10 @@
           <div class="stat-content">
             <div class="stat-label">Timetables</div>
             <div class="stat-value-row">
-              <span class="stat-value">5</span>
+              <span class="stat-value">{{ stats.total_schedules }}</span>
 
             </div>
-            <div class="stat-subtext">Active schedules</div>
+            <div class="stat-subtext">class schedules</div>
           </div>
         </div>
       </div>
@@ -122,7 +123,7 @@
           <div class="stat-content">
             <div class="stat-label">Notes</div>
             <div class="stat-value-row">
-              <span class="stat-value">10</span>
+              <span class="stat-value">{{ stats.total_files }}</span>
             </div>
             <div class="stat-subtext">2 uploaded today</div>
           </div>
@@ -138,12 +139,12 @@
             </svg>
           </div>
           <div class="stat-content">
-            <div class="stat-label">Tests</div>
+            <div class="stat-label">Modules</div>
             <div class="stat-value-row">
-              <span class="stat-value">1</span>
+              <span class="stat-value">{{ stats.total_modules }}</span>
 
             </div>
-            <div class="stat-subtext">Upcoming tests</div>
+            <div class="stat-subtext">This semesters modules</div>
           </div>
         </div>
 
@@ -170,14 +171,14 @@
 
     </div>
 
- 
+
     <!-- ── CHART + ACTIVITY ROW ── -->
     <div class="row col-8-4">
       <div class="card">
         <div class="chart-header">
           <div class="chart-header-left">
             <div class="card-title">Download Stats</div>
-            <div class="chart-stat" style="margin-top:8px">30</div>
+            <div class="chart-stat" style="margin-top:8px">{{ stats.total_downloads }}</div>
             <div style="font-size:11.5px;color:var(--text-muted)">Total downloads this week</div>
           </div>
           <div class="chart-tabs">
@@ -192,10 +193,7 @@
         <div class="card-footer" style="display:flex;gap:20px;font-size:11.5px;color:var(--text-muted)">
           <span style="display:flex;align-items:center;gap:5px"><span
               style="width:10px;height:3px;background:var(--primary);border-radius:2px;display:inline-block"></span>
-            Sessions</span>
-          <span style="display:flex;align-items:center;gap:5px"><span
-              style="width:10px;height:3px;background:var(--azure);border-radius:2px;display:inline-block;opacity:.6"></span>
-            Page views</span>
+            Downloads</span>
         </div>
       </div>
 
@@ -255,90 +253,98 @@
       <div class="card">
         <div class="card-header">
           <div>
-            <div class="card-title">Recent Orders</div>
-            <div class="card-subtitle">Latest 5 transactions</div>
+            <div class="card-title">Recent Activity Logs</div>
+            <div class="card-subtitle">Latest 5 system events</div>
           </div>
           <button class="btn btn-outline btn-sm">View All →</button>
         </div>
+
         <div class="card-body p-0">
           <div class="table-responsive">
             <table class="table">
               <thead>
                 <tr>
-                  <th>Order</th>
-                  <th>Customer</th>
-                  <th>Product</th>
-                  <th>Amount</th>
+                  <th>ID</th>
+                  <th>Timestamp</th>
+                  <th>User</th>
+                  <th>Filename</th>
+                  <th>IP Address</th>
                   <th>Status</th>
-                  <th>Date</th>
                 </tr>
               </thead>
+
               <tbody>
+
                 <tr>
-                  <td class="cell-mono">#7841</td>
+                  <td class="cell-mono">#LOG-1025</td>
+                  <td>2026-08-04 08:14:32</td>
                   <td>
                     <div class="cell-customer">
-                      <div class="cell-avatar" style="background:var(--primary)">JD</div><span class="cell-strong">John
-                        Doe</span>
+                      <div class="cell-avatar" style="background:var(--primary)">IM</div>
+                      <span class="cell-strong">Isaac M.</span>
                     </div>
                   </td>
-                  <td>AdminLTE Pro</td>
-                  <td class="cell-strong">$245</td>
-                  <td><span class="status status-green">Paid</span></td>
-                  <td>Feb 14</td>
+                  <td>student_records.pdf</td>
+                  <td>192.168.1.24</td>
+                  <td><span class="status status-green">Success</span></td>
                 </tr>
+
                 <tr>
-                  <td class="cell-mono">#7840</td>
+                  <td class="cell-mono">#LOG-1024</td>
+                  <td>2026-08-04 07:58:11</td>
                   <td>
                     <div class="cell-customer">
-                      <div class="cell-avatar" style="background:var(--azure)">AS</div><span class="cell-strong">Anna
-                        Smith</span>
+                      <div class="cell-avatar" style="background:var(--azure)">JN</div>
+                      <span class="cell-strong">Jane N.</span>
                     </div>
                   </td>
-                  <td>Gentelella Theme</td>
-                  <td class="cell-strong">$89</td>
+                  <td>course_schedule.xlsx</td>
+                  <td>10.0.0.18</td>
                   <td><span class="status status-blue">Processing</span></td>
-                  <td>Feb 13</td>
                 </tr>
+
                 <tr>
-                  <td class="cell-mono">#7839</td>
+                  <td class="cell-mono">#LOG-1023</td>
+                  <td>2026-08-04 07:42:57</td>
                   <td>
                     <div class="cell-customer">
-                      <div class="cell-avatar" style="background:var(--purple)">RJ</div><span class="cell-strong">Robert
-                        Jones</span>
+                      <div class="cell-avatar" style="background:var(--purple)">RK</div>
+                      <span class="cell-strong">Robert K.</span>
                     </div>
                   </td>
-                  <td>Dashboard Pack</td>
-                  <td class="cell-strong">$490</td>
-                  <td><span class="status status-green">Paid</span></td>
-                  <td>Feb 13</td>
+                  <td>results_2026.csv</td>
+                  <td>172.16.5.33</td>
+                  <td><span class="status status-green">Success</span></td>
                 </tr>
+
                 <tr>
-                  <td class="cell-mono">#7838</td>
+                  <td class="cell-mono">#LOG-1022</td>
+                  <td>2026-08-04 07:29:06</td>
                   <td>
                     <div class="cell-customer">
-                      <div class="cell-avatar" style="background:var(--yellow)">EW</div><span class="cell-strong">Emily
-                        Wang</span>
+                      <div class="cell-avatar" style="background:var(--yellow)">EW</div>
+                      <span class="cell-strong">Emily W.</span>
                     </div>
                   </td>
-                  <td>ArchitectUI</td>
-                  <td class="cell-strong">$125</td>
+                  <td>academic_calendar.docx</td>
+                  <td>192.168.10.7</td>
                   <td><span class="status status-yellow">Pending</span></td>
-                  <td>Feb 12</td>
                 </tr>
+
                 <tr>
-                  <td class="cell-mono">#7837</td>
+                  <td class="cell-mono">#LOG-1021</td>
+                  <td>2026-08-04 07:11:48</td>
                   <td>
                     <div class="cell-customer">
-                      <div class="cell-avatar" style="background:var(--red)">MK</div><span class="cell-strong">Mark
-                        Kim</span>
+                      <div class="cell-avatar" style="background:var(--red)">MK</div>
+                      <span class="cell-strong">Michael K.</span>
                     </div>
                   </td>
-                  <td>Bootstrap Bundle</td>
-                  <td class="cell-strong">$67</td>
-                  <td><span class="status status-red">Cancelled</span></td>
-                  <td>Feb 11</td>
+                  <td>transcript_export.zip</td>
+                  <td>203.82.45.19</td>
+                  <td><span class="status status-red">Failed</span></td>
                 </tr>
+
               </tbody>
             </table>
           </div>
@@ -347,7 +353,7 @@
 
       <!-- Storage + Device usage -->
       <div style="display:flex;flex-direction:column;gap:16px">
-        <div class="card">
+        <div style="height: 12rem;" class="card">
           <div class="card-header">
             <div class="card-title">Storage</div>
             <div class="card-subtitle">0.5 GB of 1.5 GB remaining</div>
@@ -372,7 +378,7 @@
 
         <div class="card">
           <div class="card-header">
-            <div class="card-title">Device Usage</div>
+            <div class="card-title">Role distribution</div>
           </div>
           <div class="card-body">
             <div class="donut-block">
@@ -380,31 +386,25 @@
                 <div data-chart="device-usage" style="width:100%;height:100%"></div>
 
                 <div class="donut-center-label">
-                  <div class="num">8.4k</div>
-                  <div class="sub">devices</div>
+                  <div class="num">4</div>
+                  <div class="sub">Roles</div>
                 </div>
               </div>
               <div class="donut-legend">
-                <div class="donut-legend-item"><span class="dot" style="background:var(--primary)"></span> iOS <span
-                    class="pct">30%</span>
-                </div>
-                <div class="donut-legend-item"><span class="dot" style="background:var(--azure)"></span> Android <span
-                    class="pct">25%</span>
-                </div>
-                <div class="donut-legend-item"><span class="dot" style="background:var(--yellow)"></span> Desktop
-                  <span class="pct">20%</span>
-                </div>
-                <div class="donut-legend-item"><span class="dot" style="background:var(--purple)"></span> Tablet <span
-                    class="pct">15%</span>
-                </div>
-                <div class="donut-legend-item"><span class="dot" style="background:var(--border-color)"></span> Other
-                  <span class="pct">10%</span>
-                </div>
+                <div class="donut-legend-item"><span class="dot" style="background:var(--primary)"></span> Students</div>
+
+                <div class="donut-legend-item"><span class="dot" style="background:var(--azure)"></span> Admin</div>
+
+                <div class="donut-legend-item"><span class="dot" style="background:var(--yellow)"></span> Owner</div>
+
+                <div class="donut-legend-item"><span class="dot" style="background:var(--purple)"></span> Lectures</div>
+                
               </div>
             </div>
           </div>
         </div>
       </div>
+
     </div>
 
     <!-- announcements -->
@@ -470,6 +470,7 @@
       </div>
     </div>
 
+  </div>
   </div>
 </main>
 

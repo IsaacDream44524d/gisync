@@ -1,7 +1,7 @@
 from flask import Flask, url_for, redirect
 from app.config import Config
 from app.utils.vite import ViteAssets
-from app.extensions import migrate, db, login_manager, bcrypt
+from app.extensions import migrate, db, login_manager, bcrypt, cache
 from dotenv import load_dotenv
 from app.utils.handers import errors
 
@@ -30,10 +30,14 @@ def create_app():
     app.config['SESSION_COOKIES_HTTPONLY'] = True
     app.config['REMEMBER_COOKIES_DURATION'] = 3600 * 24 * 7
 
+    app.config['CACHE_TYPE'] = 'SimpleCache'
+    app.config['CACHE_DEFAULT_TIMEOUT'] = 300
+    
 
     db.init_app(app)
     login_manager.init_app(app)
     bcrypt.init_app(app)
+    cache.init_app(app)
 
     migrate.init_app(app, db)
 

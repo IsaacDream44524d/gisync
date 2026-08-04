@@ -1,9 +1,5 @@
 from app.extensions import db
-from datetime import datetime, timezone
-from sqlalchemy import UniqueConstraint
-from .file import File
 from .user import User
-from .enums import ReportStatus
 
 
 
@@ -23,7 +19,7 @@ class Schedule(db.Model):
     created_by_id = db.Column(db.Integer, db.ForeignKey(User.id) ,nullable=False, index=True)
 
 
-    creater = db.relationship('User', backref=db.backref('reports', lazy='dynamic'))
+    creator = db.relationship('User', backref=db.backref('schedules', lazy='dynamic'))
 
   
     def __repr__(self):

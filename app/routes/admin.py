@@ -2,6 +2,8 @@ from flask import Blueprint, render_template
 from flask_login import current_user, login_required
 from app.utils.decorators import role_required
 from app.services.user_service import UserRole
+from app.services.stats import getAdminStats
+from app.extensions import db
 
 admin = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -9,7 +11,9 @@ admin = Blueprint('admin', __name__, url_prefix='/admin')
 @login_required
 @role_required(UserRole.SUPER_ADMIN)
 def dashboard():
-    return render_template('admin/dashboard.html', title='dashboard')
+    stats = getAdminStats(db.session)
+    print(f'**********************{stats}')
+    return render_template('admin/dashboard.html', title='dashboard', stats=stats)
 
 
 @admin.route('/user-management')
@@ -70,6 +74,8 @@ def notifications():
 @role_required(UserRole.SUPER_ADMIN)
 def calendar():
     return render_template('calendar.html')
+
+#AFTER CREATING A USER OR UPLOADING A FILE DO 'cache.delete(admin-stats)'
 
 
 

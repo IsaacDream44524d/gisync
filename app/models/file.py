@@ -9,7 +9,7 @@ class File(db.Model):
     __tablename__ = 'file'
 
     id = db.Column(db.Integer, primary_key=True, index=True)
-    course_id = db.Column(db.Integer, db.ForeignKey(Course.id, ondelete='CASCADE') ,nullable=False, index=True)
+    course_id = db.Column(db.Integer, db.ForeignKey(Course.id, ondelete='CASCADE') ,nullable=True, index=True)
     category_id = db.Column(db.Integer, db.ForeignKey(Category.id) ,nullable=False, index=True)
     uploaded_by = db.Column(db.Integer, db.ForeignKey(User.id) ,nullable=False, index=True)
     file_path = db.Column(db.String(500), nullable=False, unique=True)
