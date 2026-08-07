@@ -1,8 +1,8 @@
-"""empty message
+"""initial migrate
 
-Revision ID: ff323054ea66
+Revision ID: dc80e4cfe614
 Revises: 
-Create Date: 2026-07-27 00:34:53.442158
+Create Date: 2026-08-06 16:35:41.993117
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'ff323054ea66'
+revision = 'dc80e4cfe614'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -38,30 +38,11 @@ def upgrade():
         batch_op.create_index(batch_op.f('ix_course_id'), ['id'], unique=False)
         batch_op.create_index(batch_op.f('ix_course_name'), ['name'], unique=True)
 
-    op.create_table('invitation',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('username', sa.String(length=25), nullable=False),
-    sa.Column('email', sa.String(length=120), nullable=False),
-    sa.Column('invited_by_id', sa.Integer(), nullable=True),
-    sa.Column('is_used', sa.Boolean(), nullable=True),
-    sa.Column('role', sa.Enum('STUDENT', 'ADMIN', 'SUPER_ADMIN', name='userrole'), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
-    with op.batch_alter_table('invitation', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_invitation_created_at'), ['created_at'], unique=False)
-        batch_op.create_index(batch_op.f('ix_invitation_email'), ['email'], unique=True)
-        batch_op.create_index(batch_op.f('ix_invitation_id'), ['id'], unique=False)
-        batch_op.create_index(batch_op.f('ix_invitation_invited_by_id'), ['invited_by_id'], unique=False)
-        batch_op.create_index(batch_op.f('ix_invitation_is_used'), ['is_used'], unique=False)
-        batch_op.create_index(batch_op.f('ix_invitation_role'), ['role'], unique=False)
-        batch_op.create_index(batch_op.f('ix_invitation_username'), ['username'], unique=True)
-
     op.create_table('user',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(length=25), nullable=False),
     sa.Column('email', sa.String(length=120), nullable=False),
-    sa.Column('password_hash', sa.String(length=255), nullable=False),
+    sa.Column('password_hash', sa.String(length=255), nullable=True),
     sa.Column('year', sa.Integer(), nullable=False),
     sa.Column('role', sa.Enum('STUDENT', 'ADMIN', 'SUPER_ADMIN', name='userrole'), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=True),
@@ -79,7 +60,7 @@ def upgrade():
 
     op.create_table('file',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('course_id', sa.Integer(), nullable=False),
+    sa.Column('course_id', sa.Integer(), nullable=True),
     sa.Column('category_id', sa.Integer(), nullable=False),
     sa.Column('uploaded_by', sa.Integer(), nullable=False),
     sa.Column('file_path', sa.String(length=500), nullable=False),
@@ -101,6 +82,44 @@ def upgrade():
         batch_op.create_index(batch_op.f('ix_file_uploaded_at'), ['uploaded_at'], unique=False)
         batch_op.create_index(batch_op.f('ix_file_uploaded_by'), ['uploaded_by'], unique=False)
 
+    op.create_table('invitation',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('username', sa.String(length=25), nullable=False),
+    sa.Column('email', sa.String(length=120), nullable=False),
+    sa.Column('invited_by_id', sa.Integer(), nullable=False),
+    sa.Column('is_used', sa.Boolean(), nullable=True),
+    sa.Column('role', sa.Enum('STUDENT', 'ADMIN', 'SUPER_ADMIN', name='userrole'), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.ForeignKeyConstraint(['invited_by_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    with op.batch_alter_table('invitation', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_invitation_created_at'), ['created_at'], unique=False)
+        batch_op.create_index(batch_op.f('ix_invitation_email'), ['email'], unique=True)
+        batch_op.create_index(batch_op.f('ix_invitation_id'), ['id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_invitation_invited_by_id'), ['invited_by_id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_invitation_is_used'), ['is_used'], unique=False)
+        batch_op.create_index(batch_op.f('ix_invitation_role'), ['role'], unique=False)
+        batch_op.create_index(batch_op.f('ix_invitation_username'), ['username'], unique=True)
+
+    op.create_table('schedule',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('title', sa.String(length=200), nullable=False),
+    sa.Column('type', sa.String(length=50), nullable=False),
+    sa.Column('subject', sa.String(length=100), nullable=True),
+    sa.Column('start_time', sa.DateTime(), nullable=True),
+    sa.Column('end_time', sa.DateTime(), nullable=True),
+    sa.Column('version', sa.Integer(), nullable=True),
+    sa.Column('created_by_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['created_by_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    with op.batch_alter_table('schedule', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_schedule_created_by_id'), ['created_by_id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_schedule_end_time'), ['end_time'], unique=False)
+        batch_op.create_index(batch_op.f('ix_schedule_id'), ['id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_schedule_start_time'), ['start_time'], unique=False)
+
     op.create_table('download_log',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('file_id', sa.Integer(), nullable=False),
@@ -115,6 +134,29 @@ def upgrade():
         batch_op.create_index(batch_op.f('ix_download_log_downloaded_by'), ['downloaded_by'], unique=False)
         batch_op.create_index(batch_op.f('ix_download_log_file_id'), ['file_id'], unique=False)
         batch_op.create_index(batch_op.f('ix_download_log_id'), ['id'], unique=False)
+
+    op.create_table('notification',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('message', sa.Text(), nullable=False),
+    sa.Column('type', sa.String(length=50), nullable=False),
+    sa.Column('file_id', sa.Integer(), nullable=True),
+    sa.Column('schedule_id', sa.Integer(), nullable=True),
+    sa.Column('created_by_id', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('is_read', sa.Boolean(), nullable=True),
+    sa.Column('Target_role', sa.String(length=50), nullable=True),
+    sa.Column('posted_at', sa.DateTime(), nullable=True),
+    sa.ForeignKeyConstraint(['created_by_id'], ['user.id'], ),
+    sa.ForeignKeyConstraint(['file_id'], ['file.id'], ),
+    sa.ForeignKeyConstraint(['schedule_id'], ['schedule.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    with op.batch_alter_table('notification', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_notification_created_by_id'), ['created_by_id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_notification_file_id'), ['file_id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_notification_id'), ['id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_notification_posted_at'), ['posted_at'], unique=False)
+        batch_op.create_index(batch_op.f('ix_notification_schedule_id'), ['schedule_id'], unique=False)
 
     op.create_table('report',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -149,6 +191,14 @@ def downgrade():
         batch_op.drop_index(batch_op.f('ix_report_file_id'))
 
     op.drop_table('report')
+    with op.batch_alter_table('notification', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_notification_schedule_id'))
+        batch_op.drop_index(batch_op.f('ix_notification_posted_at'))
+        batch_op.drop_index(batch_op.f('ix_notification_id'))
+        batch_op.drop_index(batch_op.f('ix_notification_file_id'))
+        batch_op.drop_index(batch_op.f('ix_notification_created_by_id'))
+
+    op.drop_table('notification')
     with op.batch_alter_table('download_log', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_download_log_id'))
         batch_op.drop_index(batch_op.f('ix_download_log_file_id'))
@@ -156,6 +206,23 @@ def downgrade():
         batch_op.drop_index(batch_op.f('ix_download_log_downloaded_at'))
 
     op.drop_table('download_log')
+    with op.batch_alter_table('schedule', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_schedule_start_time'))
+        batch_op.drop_index(batch_op.f('ix_schedule_id'))
+        batch_op.drop_index(batch_op.f('ix_schedule_end_time'))
+        batch_op.drop_index(batch_op.f('ix_schedule_created_by_id'))
+
+    op.drop_table('schedule')
+    with op.batch_alter_table('invitation', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_invitation_username'))
+        batch_op.drop_index(batch_op.f('ix_invitation_role'))
+        batch_op.drop_index(batch_op.f('ix_invitation_is_used'))
+        batch_op.drop_index(batch_op.f('ix_invitation_invited_by_id'))
+        batch_op.drop_index(batch_op.f('ix_invitation_id'))
+        batch_op.drop_index(batch_op.f('ix_invitation_email'))
+        batch_op.drop_index(batch_op.f('ix_invitation_created_at'))
+
+    op.drop_table('invitation')
     with op.batch_alter_table('file', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_file_uploaded_by'))
         batch_op.drop_index(batch_op.f('ix_file_uploaded_at'))
@@ -175,16 +242,6 @@ def downgrade():
         batch_op.drop_index(batch_op.f('ix_user_created_at'))
 
     op.drop_table('user')
-    with op.batch_alter_table('invitation', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_invitation_username'))
-        batch_op.drop_index(batch_op.f('ix_invitation_role'))
-        batch_op.drop_index(batch_op.f('ix_invitation_is_used'))
-        batch_op.drop_index(batch_op.f('ix_invitation_invited_by_id'))
-        batch_op.drop_index(batch_op.f('ix_invitation_id'))
-        batch_op.drop_index(batch_op.f('ix_invitation_email'))
-        batch_op.drop_index(batch_op.f('ix_invitation_created_at'))
-
-    op.drop_table('invitation')
     with op.batch_alter_table('course', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_course_name'))
         batch_op.drop_index(batch_op.f('ix_course_id'))

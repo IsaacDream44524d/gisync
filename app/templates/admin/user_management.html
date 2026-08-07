@@ -2,271 +2,774 @@
 
 {% block content %}
 
-  <main class="main">
-    <div class="page-wrapper">
+<style>
+  .user-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    min-width: 200px;
+    background: var(--bg-surface, #fff);
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
+    display: none;
+    z-index: 1000;
+    overflow: hidden;
+  }
 
-      <div class="page-header">
-        <div class="page-header-row">
-          <div>
-            <div class="page-pretitle">Admin</div>
-            <h1 class="page-title">User management</h1>
-          </div>
-          <div class="page-actions">
-            <button class="btn btn-outline">Export</button>
-            <button class="btn btn-primary" id="invite-btn">+ Invite user</button>
+  .user-menu.show {
+    display: block;
+  }
+
+  .user-menu a,
+  .user-menu button {
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    background: none;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .user-menu a:hover,
+  .user-menu button:hover {
+    background: rgba(0, 0, 0, .05);
+  }
+
+  .user-menu form {
+    margin: 0;
+  }
+
+  .user-menu .danger {
+    color: #dc2626;
+  }
+
+  .opt-btn {
+    width: 26px;
+    height: 26px;
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--text-muted);
+    display: flex;
+    overflow: hidden;
+    transition: background 100ms, color 100ms;
+    margin-bottom: 10px;
+    position: absolute;
+  }
+
+  .opt-btn:hover {
+    background: var(--body-bg);
+    color: var(--text-secondary);
+  }
+
+  .opt-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .upload-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, .45);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    z-index: 1000;
+  }
+
+  .upload-modal-overlay.show {
+    display: flex;
+  }
+
+  .upload-modal {
+    width: 100%;
+    max-width: 700px;
+    max-height: 90vh;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, .15);
+  }
+
+  .upload-header {
+    padding: 24px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .upload-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+
+  .close-btn {
+    border: none;
+    background: none;
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .upload-body {
+    padding: 24px;
+    overflow-y: auto;
+  }
+
+  .dropzone {
+    border: 2px dashed #d1d5db;
+    border-radius: 12px;
+    padding: 60px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: .2s;
+  }
+
+  .dropzone:hover {
+    border-color: #10b981;
+  }
+
+  .dropzone.dragover {
+    border-color: #10b981;
+    background: #f0fdf4;
+  }
+
+  .upload-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+  }
+
+  #selectedFile {
+    margin-top: 16px;
+    font-weight: 500;
+    word-break: break-word;
+  }
+
+  .upload-footer {
+    padding: 20px 24px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 12px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background: #10b981;
+    color: white;
+    border: none;
+  }
+
+  .btn-secondary {
+    background: white;
+    border: 1px solid #d1d5db;
+  }
+
+  /* Tablet */
+  @media (max-width: 768px) {
+
+    .upload-header,
+    .upload-body,
+    .upload-footer {
+      padding: 18px;
+    }
+
+    .dropzone {
+      padding: 40px 16px;
+    }
+
+    .upload-icon {
+      font-size: 40px;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 60rem) {
+    .upload-modal {
+      max-height: 95vh;
+      border-radius: 12px;
+    }
+
+    .upload-header h3 {
+      font-size: 1rem;
+    }
+
+    .dropzone {
+      padding: 32px 12px;
+    }
+
+    .upload-icon {
+      font-size: 32px;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      width: fit-content;
+    }
+
+  }
+
+  .import-result {
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid;
+    font-size: .95rem;
+  }
+
+  .import-result.hidden {
+    display: none;
+  }
+
+  .import-result.success {
+    background: #ecfdf5;
+    border-color: #bbf7d0;
+    color: #166534;
+  }
+
+  .import-result.error {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #991b1b;
+  }
+
+  .import-result ul {
+    margin-top: 10px;
+    padding-left: 20px;
+  }
+
+  .import-result li {
+    margin-bottom: 4px;
+  }
+
+  .skeleton.hidden {
+    display: none;
+  }
+</style>
+
+<main class="main">
+
+
+  <div class="page-wrapper">
+
+    <div class="page-header">
+      <div class="page-header-row">
+        <div>
+          <div class="page-pretitle">Admin</div>
+          <h1 class="page-title">User management</h1>
+        </div>
+        <div class="page-actions">
+          <button id="openUploadModal" class="btn btn-outline">Import</button>
+          <button class="btn btn-primary" id="invite-btn">+ Invite user</button>
+        </div>
+
+        <!-- Modal -->
+        <div class="upload-modal-overlay" id="uploadModal">
+          <div class="upload-modal">
+            <div class="upload-header">
+              <h3>Upload Files</h3>
+              <button id="closeUploadModal" class="close-btn">
+                &times;
+              </button>
+            </div>
+
+            <form id="uploadForm">
+              <div class="upload-body">
+
+                <div class="dropzone" id="dropzone">
+                  <input type="file" id="fileInput" name="file" hidden>
+
+                  <div class="upload-icon">
+                    ⬆
+                  </div>
+
+                  <h4>Drag files here, or click to browse</h4>
+                  <p>
+                    XLSX supported ONLY
+                  </p>
+                </div>
+
+                <div id="selectedFile"></div>
+
+              </div>
+
+              <div class="upload-footer">
+                <button type="button" class="btn btn-secondary" id="cancelUpload">
+                  Cancel
+                </button>
+
+                <button type="submit" class="btn btn-primary">
+                  Upload File
+                </button>
+              </div>
+            </form>
           </div>
         </div>
+
       </div>
-
-      <div class="row col-3" style="margin-bottom:16px">
-        <div class="card">
-          <div class="stat">
-            <div class="stat-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <circle cx="12" cy="8" r="4" />
-                <path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7" />
-              </svg></div>
-            <div class="stat-content">
-              <div class="stat-label">Total users</div>
-              <div class="stat-value-row"><span class="stat-value">12</span></div>
-              <div class="stat-subtext">3 active right now</div>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="stat">
-            <div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M12 1l3 6 6 .9-4.5 4.4 1 6.7L12 16l-5.5 3 1-6.7L3 7.9 9 7z" />
-              </svg></div>
-            <div class="stat-content">
-              <div class="stat-label">Admins</div>
-              <div class="stat-value-row"><span class="stat-value">2</span></div>
-              <div class="stat-subtext">Owner + 1 admin</div>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="stat">
-            <div class="stat-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-                <path d="M3 9h18M9 21V9" />
-              </svg></div>
-            <div class="stat-content">
-              <div class="stat-label">Pending invites</div>
-              <div class="stat-value-row"><span class="stat-value">2</span></div>
-              <div class="stat-subtext">Awaiting acceptance</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header" style="gap:12px;flex-wrap:wrap">
-          <div class="users-filters">
-            <div class="search-box" style="width:240px">
-              <svg class="s-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                <circle cx="7" cy="7" r="5" />
-                <path d="M11 11l3.5 3.5" />
-              </svg>
-              <input type="text" id="users-search" placeholder="Search by name or email…" aria-label="Search users">
-            </div>
-            <select class="form-control" id="filter-role" style="width:140px;height:32px" aria-label="Filter by role">
-              <option value="">All roles</option>
-              <option value="Owner">Owner</option>
-              <option value="Admin">Admin</option>
-              <option value="Editor">Editor</option>
-              <option value="Viewer">Viewer</option>
-            </select>
-            <select class="form-control" id="filter-status" style="width:140px;height:32px" aria-label="Filter by status">
-              <option value="">All statuses</option>
-              <option value="active">Active</option>
-              <option value="pending">Pending</option>
-              <option value="suspended">Suspended</option>
-            </select>
-          </div>
-        </div>
-        <div class="card-body p-0">
-          <div class="table-responsive">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th style="width:40px"><input type="checkbox" id="select-all" aria-label="Select all rows"></th>
-                  <th>User</th>
-                  <th>Role</th>
-                  <th>Status</th>
-                  <th>Last active</th>
-                  <th>Joined</th>
-                  <th data-orderable="false"></th>
-                </tr>
-              </thead>
-              <tbody id="users-rows"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
     </div>
-  </main>
 
-  <script type="module">
-    import { showToast } from '/src/v4/toast.js';
-    import { showModal } from '/src/v4/modal.js';
-    import { openMenu } from '/src/v4/menus.js';
+    <div class="row col-1">
+      <!-- Import Result Banner -->
+      <div id="importResult" class="import-result hidden"></div>
+    </div>
 
-    const USERS = [
-      { name: 'Aigars Silkalns', email: 'aigars@example.com', ini: 'A', col: 'primary', role: 'Owner', status: 'active', lastActive: 'just now', joined: 'Mar 2024' },
-      { name: 'Sarah Kowalski', email: 'sarah@example.com', ini: 'SK', col: 'azure', role: 'Admin', status: 'active', lastActive: '2 min ago', joined: 'Apr 2024' },
-      { name: 'Michael Reyes', email: 'michael@example.com', ini: 'MR', col: 'purple', role: 'Editor', status: 'active', lastActive: '14 min ago', joined: 'May 2024' },
-      { name: 'Emily Wang', email: 'emily@example.com', ini: 'EW', col: 'yellow', role: 'Editor', status: 'active', lastActive: '1 hour ago', joined: 'Jun 2024' },
-      { name: 'Mark Kim', email: 'mark@example.com', ini: 'MK', col: 'red', role: 'Viewer', status: 'active', lastActive: '3 hours ago', joined: 'Jul 2024' },
-      { name: 'Lina Park', email: 'lina@example.com', ini: 'LP', col: 'green', role: 'Editor', status: 'active', lastActive: 'Yesterday', joined: 'Sep 2024' },
-      { name: 'Diego Reyes', email: 'diego@example.com', ini: 'DR', col: 'blue', role: 'Editor', status: 'active', lastActive: '2 days ago', joined: 'Sep 2024' },
-      { name: 'Yuki Tanaka', email: 'yuki@example.com', ini: 'YT', col: 'primary', role: 'Viewer', status: 'active', lastActive: '4 days ago', joined: 'Oct 2024' },
-      { name: 'Tom Hardy', email: 'tom@example.com', ini: 'TH', col: 'purple', role: 'Editor', status: 'active', lastActive: '1 week ago', joined: 'Nov 2024' },
-      { name: 'Robert Jones', email: 'robert@example.com', ini: 'RJ', col: 'red', role: 'Viewer', status: 'suspended', lastActive: '2 weeks ago', joined: 'Dec 2024' },
-      { name: 'invite@acme.com', email: 'invite@acme.com', ini: '?', col: 'gray', role: 'Editor', status: 'pending', lastActive: '—', joined: 'Apr 28, 2026', pending: true },
-      { name: 'newhire@team.io', email: 'newhire@team.io', ini: '?', col: 'gray', role: 'Viewer', status: 'pending', lastActive: '—', joined: 'Apr 27, 2026', pending: true }
-    ];
-    const COLORS = { primary: 'var(--primary)', azure: 'var(--azure)', purple: 'var(--purple)', yellow: 'var(--yellow)', red: 'var(--red)', green: 'var(--green)', blue: 'var(--blue)', gray: 'var(--text-disabled)' };
-    const STATUS_CLS = { active: 'green', pending: 'yellow', suspended: 'red' };
-    const ROLE_CLS = { Owner: 'purple', Admin: 'red', Editor: 'blue', Viewer: 'green' };
-    const ROLES = ['Owner', 'Admin', 'Editor', 'Viewer'];
-
-    let filterText = '', filterRole = '', filterStatus = '';
-
-    function visible() {
-      const q = filterText.toLowerCase();
-      return USERS.filter((u) =>
-        (!q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)) &&
-        (!filterRole || u.role === filterRole) &&
-        (!filterStatus || u.status === filterStatus)
-      );
-    }
-
-    function render() {
-      const rows = document.getElementById('users-rows');
-      const items = visible();
-      rows.innerHTML = items.map((u, idx) => `
-      <tr data-email="${u.email}">
-        <td><input type="checkbox" class="row-cb" aria-label="Select row"></td>
-        <td>
-          <div class="cell-customer">
-            <div class="cell-avatar${u.pending ? ' pending' : ''}" style="background:${u.pending ? 'var(--bg-surface-secondary)' : COLORS[u.col]};color:${u.pending ? 'var(--text-muted)' : 'white'}">${u.ini}</div>
-            <div>
-              <div class="cell-strong">${u.pending ? '<em style="font-style:normal;color:var(--text-muted)">Invited</em>' : u.name}</div>
-              <div style="font-size:11.5px;color:var(--text-muted)">${u.email}</div>
-            </div>
+    <div class="row col-3" style="margin-bottom:16px">
+      <div class="card">
+        <div class="stat">
+          <div class="stat-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7" />
+            </svg></div>
+          <div class="stat-content">
+            <div class="stat-label">Total users</div>
+            <div class="stat-value-row"><span class="stat-value">12</span></div>
+            <div class="stat-subtext">3 active right now</div>
           </div>
-        </td>
-        <td><button type="button" class="role-chip role-${ROLE_CLS[u.role]}" data-role-edit data-email="${u.email}">${u.role} <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg></button></td>
-        <td><span class="status status-${STATUS_CLS[u.status]}">${u.status[0].toUpperCase() + u.status.slice(1)}</span></td>
-        <td style="font-size:12.5px;color:var(--text-muted)">${u.lastActive}</td>
-        <td style="font-size:12.5px;color:var(--text-muted)">${u.joined}</td>
-        <td><button class="card-opt-btn" data-row-menu data-email="${u.email}" aria-label="More"><svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="3" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="8" cy="13" r="1.2"/></svg></button></td>
-      </tr>
-    `).join('');
-    }
-
-    document.getElementById('users-search').addEventListener('input', (e) => { filterText = e.target.value; render(); });
-    document.getElementById('filter-role').addEventListener('change', (e) => { filterRole = e.target.value; render(); });
-    document.getElementById('filter-status').addEventListener('change', (e) => { filterStatus = e.target.value; render(); });
-
-    document.getElementById('select-all').addEventListener('change', (e) => {
-      document.querySelectorAll('#users-rows .row-cb').forEach((cb) => { cb.checked = e.target.checked; });
-    });
-
-    document.getElementById('users-rows').addEventListener('click', (e) => {
-      const roleBtn = e.target.closest('[data-role-edit]');
-      const moreBtn = e.target.closest('[data-row-menu]');
-      if (roleBtn) {
-        e.stopPropagation();
-        const email = roleBtn.dataset.email;
-        const u = USERS.find((x) => x.email === email);
-        if (!u) return;
-        openMenu(roleBtn, ROLES.map((r) => ({
-          label: r + (r === u.role ? ' ✓' : ''),
-          action: () => {
-            if (u.role === 'Owner' || r === 'Owner') {
-              showToast('Owner role cannot be changed inline', { variant: 'warning' });
-              return;
-            }
-            u.role = r;
-            render();
-            showToast(`${u.name}: role set to ${r}`, { variant: 'success' });
-          }
-        })));
-      } else if (moreBtn) {
-        e.stopPropagation();
-        const email = moreBtn.dataset.email;
-        const u = USERS.find((x) => x.email === email);
-        if (!u) return;
-        const items = [
-          { label: 'View profile', action: () => showToast(`Profile: ${u.name}`) },
-          { label: 'Reset password', action: () => showToast(`Reset link sent to ${u.email}`, { variant: 'success' }) },
-          {
-            label: u.status === 'suspended' ? 'Reactivate' : 'Suspend', action: () => {
-              u.status = u.status === 'suspended' ? 'active' : 'suspended';
-              render();
-              showToast(`${u.name}: ${u.status}`);
-            }
-          },
-          '-',
-          {
-            label: 'Remove from workspace', action: () => {
-              const i = USERS.indexOf(u);
-              if (i > -1) USERS.splice(i, 1);
-              render();
-              showToast(`Removed ${u.name}`);
-            }
-          }
-        ];
-        openMenu(moreBtn, items);
-      }
-    });
-
-    document.getElementById('invite-btn').addEventListener('click', (e) => {
-      e.stopPropagation();
-      showModal({
-        title: 'Invite a user',
-        body: `
-        <form class="modal-form" novalidate>
-          <div class="modal-form-row">
-            <label for="iv-email">Email address</label>
-            <input type="email" id="iv-email" name="email" placeholder="teammate@example.com" autocomplete="off" required>
+        </div>
+      </div>
+      <div class="card">
+        <div class="stat">
+          <div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 1l3 6 6 .9-4.5 4.4 1 6.7L12 16l-5.5 3 1-6.7L3 7.9 9 7z" />
+            </svg></div>
+          <div class="stat-content">
+            <div class="stat-label">Admins</div>
+            <div class="stat-value-row"><span class="stat-value">2</span></div>
+            <div class="stat-subtext">Owner + 1 admin</div>
           </div>
-          <div class="modal-form-row">
-            <label for="iv-role">Role</label>
-            <select id="iv-role" name="role">
-              <option value="Viewer">Viewer — can only view</option>
-              <option value="Editor" selected>Editor — can view and edit</option>
-              <option value="Admin">Admin — can manage users</option>
-            </select>
+        </div>
+      </div>
+      <div class="card">
+        <div class="stat">
+          <div class="stat-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <path d="M3 9h18M9 21V9" />
+            </svg></div>
+          <div class="stat-content">
+            <div class="stat-label">Pending invites</div>
+            <div class="stat-value-row"><span class="stat-value">2</span></div>
+            <div class="stat-subtext">Awaiting acceptance</div>
           </div>
-          <div class="modal-form-row">
-            <label for="iv-message">Personal message (optional)</label>
-            <textarea id="iv-message" name="message" rows="3" placeholder="Welcome to the team!"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" style="gap:12px;flex-wrap:wrap">
+        <div class="users-filters">
+          <div class="search-box" style="width:240px">
+            <svg class="s-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="7" cy="7" r="5" />
+              <path d="M11 11l3.5 3.5" />
+            </svg>
+            <input type="text" id="users-search" placeholder="Search by name or email…" aria-label="Search users">
           </div>
-        </form>
-      `,
-        actions: [
-          { label: 'Cancel', variant: 'outline' },
-          {
-            label: 'Send invite', variant: 'primary', action: ({ body }) => {
-              const form = body.querySelector('form');
-              const fd = new FormData(form);
-              const email = (fd.get('email') || '').toString().trim();
-              const role = fd.get('role').toString();
-              if (!email) { showToast('Email is required', { variant: 'warning' }); return false; }
-              USERS.push({ name: email, email, ini: '?', col: 'gray', role, status: 'pending', lastActive: '—', joined: 'just now', pending: true });
-              render();
-              showToast(`Invite sent to ${email}`, { variant: 'success' });
-              return true;
-            }
-          }
-        ]
+          <select class="form-control" id="filter-role" style="width:140px;height:32px" aria-label="Filter by role">
+            <option value="">All roles</option>
+            <option value="Owner">Owner</option>
+            <option value="Admin">Admin</option>
+            <option value="student">Students</option>
+          </select>
+          <select class="form-control" id="filter-status" style="width:140px;height:32px" aria-label="Filter by status">
+            <option value="">All statuses</option>
+            <option value="active">Active</option>
+            <option value="pending">Pending</option>
+            <option value="suspended">Suspended</option>
+          </select>
+        </div>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+
+          <span class="skeleton hidden skeleton-rect" style="width:100%;height:100vh"></span>
+
+          <table class="table">
+
+            <thead>
+              <tr>
+                <th style="width:40px"><input type="checkbox" id="select-all" aria-label="Select all rows"></th>
+                <th>User</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Year</th>
+                <th>Joined</th>
+                <th data-orderable="false"></th>
+              </tr>
+            </thead>
+
+
+            <tbody style="width:100%;" id="users-rows">
+              {% for user in users %}
+              <tr style="position: relative;" data-name="{{ user.name|lower }}" data-email="{{ user.email|lower }}"
+                data-role="{{ user.role }}" data-status="{{ user.status }}">
+                <td>
+                  <input type="checkbox" class="row-cb">
+                </td>
+
+                <td>
+                  <div class="cell-customer">
+                    <div style="color:red;" class="cell-avatar">
+                      {{ user.name[:2].upper() }}
+                    </div>
+
+                    <div>
+                      <div class="cell-strong">
+                        {{ user.name }}
+                      </div>
+
+                      <div style="font-size:11.5px;color:var(--text-muted)">
+                        {{ user.email }}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                <td>
+                  <span class="role-chip">
+                    {{ user.role }}
+                  </span>
+                </td>
+
+                <td>
+                  <span class="status">
+                    {{ user.status|title }}
+                  </span>
+                </td>
+
+                <td>
+                  {{ user.year }}
+                </td>
+
+                <td>
+                  {{ user.joined }}
+                </td>
+
+                <td>
+                  <div class="user-actions">
+                    <button type="button" class="opt-btn" onclick="toggleMenu('{{ user.id }}')">
+                      <svg viewBox="0 0 16 16" fill="currentColor">
+                        <circle cx="8" cy="3" r="1.2" />
+                        <circle cx="8" cy="8" r="1.2" />
+                        <circle cx="8" cy="13" r="1.2" />
+                      </svg>
+                    </button>
+
+                    <div class="user-menu" id="menu-{{ user.id }}">
+                      <a href="#">
+                        View Profile
+                      </a>
+
+                      <a href="#">
+                        Change Role
+                      </a>
+
+                      <a href="#">
+                        Suspend
+                      </a>
+
+                      <form action="#" method="POST">
+                        <button type="submit">
+                          Send Reset Password
+                        </button>
+                      </form>
+
+
+                    </div>
+
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+
+          </table>
+
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+
+    const searchInput = document.getElementById("users-search");
+    const roleFilter = document.getElementById("filter-role");
+    const statusFilter = document.getElementById("filter-status");
+    const selectAll = document.getElementById("select-all");
+
+    function filterRows() {
+
+      const searchText =
+        (searchInput?.value || "")
+          .toLowerCase()
+          .trim();
+
+      const selectedRole =
+        roleFilter?.value || "";
+
+      const selectedStatus =
+        statusFilter?.value || "";
+
+      const rows =
+        document.querySelectorAll("#users-rows tr");
+
+      rows.forEach(row => {
+
+        const name =
+          row.dataset.name || "";
+
+        const email =
+          row.dataset.email || "";
+
+        const role =
+          row.dataset.role || "";
+
+        const status =
+          row.dataset.status || "";
+
+        const matchesSearch =
+          !searchText ||
+          name.includes(searchText) ||
+          email.includes(searchText);
+
+        const matchesRole =
+          !selectedRole ||
+          role === selectedRole;
+
+        const matchesStatus =
+          !selectedStatus ||
+          status === selectedStatus;
+
+        row.style.display =
+          matchesSearch &&
+            matchesRole &&
+            matchesStatus
+            ? ""
+            : "none";
       });
+    }
+
+    searchInput?.addEventListener("input", filterRows);
+    roleFilter?.addEventListener("change", filterRows);
+    statusFilter?.addEventListener("change", filterRows);
+
+    selectAll?.addEventListener("change", function () {
+
+      document
+        .querySelectorAll("#users-rows .row-cb")
+        .forEach(cb => {
+          cb.checked = this.checked;
+        });
+
     });
 
-    render();
-  </script>
+  });
+
+  function toggleMenu(userId) {
+
+    document
+      .querySelectorAll(".user-menu")
+      .forEach(menu => {
+
+        if (menu.id !== `menu-${userId}`) {
+          menu.classList.remove("show");
+        }
+
+      });
+
+    document
+      .getElementById(`menu-${userId}`)
+      .classList
+      .toggle("show");
+  }
+
+  document.addEventListener("click", function (e) {
+
+    if (!e.target.closest(".user-actions")) {
+
+      document
+        .querySelectorAll(".user-menu")
+        .forEach(menu =>
+          menu.classList.remove("show")
+        );
+    }
+
+  });
+
+
+
+  //modal
+  const modal = document.getElementById("uploadModal");
+  const openBtn = document.getElementById("openUploadModal");
+  const closeBtn = document.getElementById("closeUploadModal");
+  const cancelBtn = document.getElementById("cancelUpload");
+
+  const dropzone = document.getElementById("dropzone");
+  const fileInput = document.getElementById("fileInput");
+  const uploadForm = document.getElementById("uploadForm");
+  const selectedFile = document.getElementById("selectedFile");
+
+  openBtn.addEventListener("click", () => {
+    modal.classList.add("show");
+  });
+
+  function closeModal() {
+    modal.classList.remove("show");
+  }
+
+  closeBtn.addEventListener("click", closeModal);
+  cancelBtn.addEventListener("click", closeModal);
+
+  dropzone.addEventListener("click", () => {
+    fileInput.click();
+  });
+
+  fileInput.addEventListener("change", () => {
+    showFile();
+  });
+
+  function showFile() {
+    if (fileInput.files.length) {
+      selectedFile.textContent =
+        fileInput.files[0].name;
+    }
+  }
+
+  dropzone.addEventListener("dragover", e => {
+    e.preventDefault();
+    dropzone.classList.add("dragover");
+  });
+
+  dropzone.addEventListener("dragleave", () => {
+    dropzone.classList.remove("dragover");
+  });
+
+  dropzone.addEventListener("drop", e => {
+    e.preventDefault();
+
+    dropzone.classList.remove("dragover");
+
+    fileInput.files = e.dataTransfer.files;
+
+    showFile();
+  });
+
+  uploadForm.addEventListener("submit", async e => {
+    e.preventDefault();
+
+    if (!fileInput.files.length) {
+      //style for no file selection
+      document.querySelector('#selectedFile').textContent = 'No file selected';
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+    formData.append("category", "students")
+
+    closeModal();
+    importStudents(formData);
+
+
+  });
+
+  const table = document.querySelector('.table');
+  const skeletonLoader = document.querySelector('.skeleton');
+  const importResult = document.getElementById('importResult');
+
+  function showImportResult(type, message, errors = []) {
+    importResult.className = `import-result ${type}`;
+
+    importResult.innerHTML = `
+        <strong>${message}</strong>
+        ${errors.length
+        ? `
+                    <ul>
+                        ${errors.map(error => `<li>${error}</li>`).join('')}
+                    </ul>
+                  `
+        : ''
+      }
+    `;
+
+    importResult.classList.remove('hidden');
+
+    importResult.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
+
+  function importStudents(formData) {
+
+    // Reset previous messages
+    importResult.classList.add('hidden');
+    importResult.innerHTML = '';
+
+    // Show skeleton
+    table.style.display = 'none';
+    skeletonLoader.classList.remove('hidden');
+
+    fetch('/admin/resources/import', {
+      method: 'POST',
+      body: formData
+    })
+      .then(async (res) => {
+        const data = await res.json();
+
+        if (!res.ok) {
+          showImportResult(
+            'error',
+            'Import failed',
+            Array.isArray(data.error)
+              ? data.error
+              : [data.error || 'An unknown error occurred']
+          );
+
+          return;
+        }
+        
+        showImportResult(
+          'success',
+          data.message || 'Import completed successfully',
+          data.errors || []
+        );
+
+    
+      })
+      .catch((err) => {
+        showImportResult(
+          'error',
+          'Import failed',
+          [err.message]
+        );
+      })
+      .finally(() => {
+        skeletonLoader.classList.add('hidden');
+        table.style.display = 'table';
+      });
+  }
+</script>
 
 {% endblock %}

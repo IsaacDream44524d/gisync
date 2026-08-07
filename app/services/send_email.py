@@ -4,4 +4,11 @@ def sendResetEmail(receiver):
     
     else:
         pass
+
+def sendInviteEmail(receiver):
+    if not receiver:
+        return None
+
+    else:
+        pass
     

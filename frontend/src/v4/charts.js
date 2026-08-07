@@ -41,6 +41,7 @@ function baseOption(t) {
 function dashboardNetwork(echarts, el, t) {
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const sessions = [420, 580, 510, 720, 680, 790, 752];
+  const pageviews = [320, 460, 410, 580, 540, 660, 620];
   const chart = echarts.init(el);
   chart.setOption({
     ...baseOption(t),
@@ -79,6 +80,15 @@ function dashboardNetwork(echarts, el, t) {
           ])
         }
       },
+      {
+        name: 'Page views',
+        type: 'line',
+        smooth: true,
+        showSymbol: false,
+        data: pageviews,
+        lineStyle: { color: t.azure, width: 1.5, type: 'dashed' },
+        itemStyle: { color: t.azure }
+      }
     ]
   });
   return chart;

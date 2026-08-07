@@ -19,7 +19,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True, index=True)
     username = db.Column(db.String(25), nullable=False, unique=True, index=True)
     email = db.Column(db.String(120), nullable=False, unique=True, index=True)
-    password_hash = db.Column(db.String(255), nullable=False, index=True)
+    password_hash = db.Column(db.String(255), nullable=True, index=True)
     year = db.Column(db.Integer, nullable=False, default=2, index=True)
     role = db.Column(db.Enum(UserRole), default=UserRole.STUDENT, nullable=False, index=True)
     is_active = db.Column(db.Boolean, default=False)
@@ -50,11 +50,17 @@ class User(UserMixin, db.Model):
     def isSuperAdmin(self) -> bool:
         return self.hasRole('super_admin')
 
-    @property
+
     def setPassword(self, password):
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
 
+    def setUnusablePassword(self):
+            self.password_hash = None
+
     def checkPassword(self, password):
+        if self.password_hash is None:
+            return False
+        
         return bcrypt.check_password_hash(self.password_hash, password)
 
 
