@@ -1,9 +1,9 @@
-from flask import Blueprint, render_template, jsonify, request, flash
+from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for
 from flask_login import login_required
 from app.utils.decorators import role_required
 from app.services.user_service import UserRole
 from app.services.send_email import sendInviteEmail
-from app.services.stats import getAdminStats
+from app.services.stats import getAdminStats, getAllStudents
 from app.extensions import db
 from app.utils.spreadsheet_reader import extract_students
 from app.models.user import User
@@ -16,59 +16,18 @@ admin = Blueprint('admin', __name__, url_prefix='/admin')
 @role_required(UserRole.SUPER_ADMIN)
 def dashboard():
     stats = getAdminStats(db.session)
-    return render_template('admin/dashboard.html', title='dashboard', stats=stats)
+    form = InviteForm()
+    return render_template('admin/dashboard.html', title='dashboard', stats=stats, form=form)
 
 
 @admin.route('/user-management')
 @login_required
 @role_required(UserRole.SUPER_ADMIN)
 def userManagement():
-    users = [
-        {
-            "id": 1,
-            "name": "John Doe",
-            "email": "john@example.com",
-            "role": "student",
-            "status": "active",
-            "year": "2",
-            "joined": "Jul 2026"
-        },
-        {
-                    "id": 1,
-                    "name": "John Doe",
-                    "email": "john@example.com",
-                    "role": "student",
-                    "status": "active",
-                    "year": "2",
-                    "joined": "Jul 2026"
-                },{
-                            "id": 1,
-                            "name": "John Doe",
-                            "email": "john@example.com",
-                            "role": "student",
-                            "status": "active",
-                            "year": "2",
-                            "joined": "Jul 2026"
-                        },{
-                                    "id": 1,
-                                    "name": "John Doe",
-                                    "email": "john@example.com",
-                                    "role": "student",
-                                    "status": "active",
-                                    "year": "2",
-                                    "joined": "Jul 2026"
-                                },{
-                                            "id": 1,
-                                            "name": "John Doe",
-                                            "email": "john@example.com",
-                                            "role": "student",
-                                            "status": "active",
-                                            "year": "2",
-                                            "joined": "Jul 2026"
-                                        },
-                        
-    ]
-    return render_template('admin/user_management.html', users=users, title='user-management')
+    stats = getAdminStats(db.session)
+    form = InviteForm()
+    users = getAllStudents(db.session, db.select)
+    return render_template('admin/user_management.html', form=form, users=users, stats=stats, title='user-management')
 
 @admin.route('/file-management')
 @login_required
@@ -201,21 +160,50 @@ def import_resource():
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
-@admin.route("/invite-user", methods=["POST", 'GET'])
+@admin.route("/invite-user", methods=["POST"])
 @login_required
 @role_required(UserRole.SUPER_ADMIN)
-def invite_user():
+def inviteUser():
+    roles = {
+        'super_admin': UserRole.SUPER_ADMIN,
+        'admin': UserRole.ADMIN,
+        'student': UserRole.STUDENT
+    }
+
     form = InviteForm()
 
-    if form.validate_on_submit():
-        existing_email = User.query.filter_by(email=form.email.data).first()
+    if not form.validate_on_submit():
+        return jsonify({
+            'error': form.errors
+        }), 400
 
-        if existing_email():
-            flash('User with that email already exists', 'warning')
-        #     return re
+    existing_email = User.query.filter_by(email=form.email.data).first()
 
-        # user = User(
-        #     username=student["fullname"],
-        #     email=email,
-        #     year=student["year"]
-        # )
+    if existing_email:
+        return jsonify({
+            'error': ['User with that email already exists']
+        }), 400
+
+    role = roles.get(form.role.data)
+
+    if not role:
+        return jsonify({
+            'error': ['Invalid role selected']
+        }), 400
+
+    user = User(
+        username=form.fullname.data,
+        email=form.email.data,
+        role=role
+    )
+
+    user.setUnusablePassword()
+
+    db.session.add(user)
+    db.session.commit()
+
+    sendInviteEmail(user)
+
+    return jsonify({
+        'message': f'Invite email sent to {form.email.data} as {form.role.data}'
+    }), 200

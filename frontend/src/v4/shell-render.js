@@ -111,10 +111,10 @@ export function renderSidebar(activeKey) {
       <nav class="sidebar-nav">${groups}</nav>
       <div class="sidebar-footer">
         <div class="sidebar-user">
-          <div class="avatar">I<span class="online"></span></div>
+          <div class="avatar">${window.USER.username[0]}</div>
           <div class="sidebar-user-info">
-            <div class="name">Isaac Dream</div>
-            <div class="role">Admin</div>
+            <div class="name">${window.USER.username}</div>
+            <div class="role">${window.USER.role}</div>
           </div>
           <button class="more-btn" aria-label="More options">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="3" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="8" cy="13" r="1.2"/></svg>

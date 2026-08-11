@@ -1,4 +1,4 @@
-from sqlalchemy import func
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from app.extensions import cache
 
@@ -26,7 +26,8 @@ def getAdminStats(session: Session) -> dict:
         'total_admin': (session.query(func.count(User.id)).filter(User.role == UserRole.ADMIN).scalar() or 0),
         'total_downloads': session.query(func.count(DownloadLog.id)).scalar() or 0,
         'total_modules': session.query(func.count(Course.id)).scalar() or 0,
-        'total_schedules': session.query(func.count(Schedule.id)).scalar() or 0
+        'total_schedules': session.query(func.count(Schedule.id)).scalar() or 0,
+        'pending_invites': session.query(func.count(User.id).filter(User.is_active == False)).scalar() or 0
     }
 
     try:
@@ -45,3 +46,6 @@ def getStudentStats(session: Session, userId: int) -> dict:
         #add stats for number of classes that day
     }
 
+def getAllStudents(session: Session, select: select) -> dict:
+    return session.scalars(select(User).order_by(User.created_at.desc())).all()
+   

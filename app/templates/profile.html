@@ -1,6 +1,261 @@
 {% extends 'base.html' %}
 
-{% block name %}
+{% block content %}
+
+<style>
+  .form-group {
+    display: block;
+    margin-bottom: 16px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: var(--font-weight-medium);
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .form-label .required {
+    color: var(--red);
+    margin-left: 2px;
+  }
+
+  .form-help {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .form-control {
+    display: block;
+    width: 100%;
+    height: 36px;
+    padding: 0 12px;
+    font: inherit;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition: border-color 150ms, box-shadow 150ms;
+    font-family: var(--font);
+  }
+
+  .form-control::placeholder {
+    color: var(--text-disabled);
+  }
+
+  .form-control:hover:not(:focus) {
+    border-color: var(--text-muted);
+  }
+
+  .form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-lt);
+  }
+
+  .form-control:disabled {
+    background: var(--bg-surface-secondary);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  .form-control.is-invalid {
+    border-color: var(--red);
+  }
+
+  .form-control.is-invalid:focus {
+    box-shadow: 0 0 0 3px var(--red-lt);
+  }
+
+  .form-error {
+    font-size: 11.5px;
+    color: var(--red);
+    margin-top: 4px;
+  }
+
+  textarea.form-control {
+    height: auto;
+    min-height: 90px;
+    padding: 8px 12px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+
+  select.form-control {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 32px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%239ba5b1' stroke-width='1.5'%3E%3Cpath d='M3 5l3 3 3-3'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    cursor: pointer;
+  }
+
+  .form-check {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+    padding: 4px 0;
+  }
+
+  .form-check input[type="checkbox"],
+  .form-check input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: var(--bg-surface);
+    cursor: pointer;
+    transition: background 120ms, border-color 120ms;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .form-check input[type="radio"] {
+    border-radius: 50%;
+  }
+
+  .form-check input:hover {
+    border-color: var(--primary);
+  }
+
+  .form-check input:checked {
+    background: var(--primary);
+    border-color: var(--primary);
+  }
+
+  .form-check input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%) rotate(45deg);
+    width: 4px;
+    height: 8px;
+    border-right: 1.5px solid white;
+    border-bottom: 1.5px solid white;
+  }
+
+  .form-check input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: white;
+  }
+
+  .form-check input:focus-visible {
+    box-shadow: 0 0 0 3px var(--primary-lt);
+  }
+
+
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 16px;
+  }
+
+  .form-row.cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 768px) {
+
+    .form-row,
+    .form-row.cols-3 {
+      grid-template-columns: 1fr;
+    }
+  }
+
+
+  .input-group {
+    position: relative;
+  }
+
+  .input-group .form-control {
+    padding-left: 36px;
+  }
+
+  .input-group .input-icon {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+
+  .form-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color-light);
+  }
+
+  .form-actions.right {
+    justify-content: flex-end;
+  }
+
+
+  .input-affix {
+    display: flex;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: var(--bg-surface);
+    overflow: hidden;
+    transition: border-color 150ms, box-shadow 150ms;
+  }
+
+  .input-affix:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-lt);
+  }
+
+  .input-affix .form-control {
+    border: 0;
+    border-radius: 0;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .input-affix .form-control:focus {
+    box-shadow: none;
+  }
+
+  .input-affix .affix {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    background: var(--bg-surface-secondary);
+    white-space: nowrap;
+    border-left: 1px solid var(--border-color);
+  }
+
+  .input-affix .affix.prefix {
+    border-left: 0;
+    border-right: 1px solid var(--border-color);
+  }
+</style>
 
 <main class="main">
   <div class="page-wrapper">
@@ -24,26 +279,19 @@
         <div class="card-body" style="text-align:center;padding:24px 16px">
           <div
             style="width:96px;height:96px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-dk));margin:0 auto 12px;display:flex;align-items:center;justify-content:center;color:white;font-size:32px;font-weight:600">
-            A</div>
-          <div style="font-size:16px;font-weight:600;color:var(--text)">Aigars Silkalns</div>
-          <div style="font-size:12.5px;color:var(--text-muted);margin-top:2px">Admin · Latvia</div>
+            {{current_user.username[:1]}}</div>
+          <div style="font-size:16px;font-weight:600;color:var(--text)">{{ current_user.username }}</div>
+          <div style="font-size:12.5px;color:var(--text-muted);margin-top:2px">{{ current_user.role.value }} · GISync</div>
           <div style="margin-top:14px;display:flex;gap:6px;justify-content:center">
-            <button class="btn btn-outline btn-sm">Change avatar</button>
+            <button class="btn btn-outline btn-sm"><a style="text-decoration: none;" href="{{ url_for('admin.settings') }}">Change profile
+                pic</a></button>
           </div>
         </div>
-        <div style="border-top:1px solid var(--border-color-light)">
-          <div class="profile-ring-box" style="padding:16px">
-            <div class="ring-wrap">
-              <svg viewBox="0 0 80 80">
-                <circle class="ring-bg" cx="40" cy="40" r="34" />
-                <circle class="ring-fill" cx="40" cy="40" r="34" stroke-dashoffset="60" />
-              </svg>
-              <div class="ring-center">72<span>%</span></div>
-            </div>
-            <div class="note">Profile completion</div>
-            <a href="#" class="ring-link">Complete now →</a>
-          </div>
-        </div>
+
+        <!-- badge here -->
+        
+
+
       </div>
 
       <!-- Profile form -->
@@ -58,352 +306,30 @@
           <div class="form-row">
             <div class="form-group">
               <label class="form-label" for="firstName">First name</label>
-              <input type="text" id="firstName" class="form-control" value="Aigars">
+              <input type="text" id="firstName" class="form-control" value={{current_user.username.split()[0]}} readonly>
             </div>
             <div class="form-group">
               <label class="form-label" for="lastName">Last name</label>
-              <input type="text" id="lastName" class="form-control" value="Silkalns">
+              <input type="text" id="lastName" class="form-control" value={{current_user.username.split()[1]}} readonly>
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group">
               <label class="form-label" for="email2">Email <span class="required">*</span></label>
-              <input type="email" id="email2" class="form-control" value="aigars@colorlib.com">
+              <input type="email" id="email2" class="form-control" value={{current_user.email}} readonly>
             </div>
-            <div class="form-group">
-              <label class="form-label" for="phone">Phone</label>
-              <input type="tel" id="phone" class="form-control" placeholder="+371 …">
-            </div>
+
           </div>
 
           <div class="form-group">
             <label class="form-label" for="role">Role</label>
-            <select id="role" class="form-control">
-              <option>Administrator</option>
-              <option>Editor</option>
-              <option>Viewer</option>
-            </select>
+            <input type="role" id="role" class="form-control" value={{current_user.role.value}} readonly>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="bio">Bio</label>
-            <textarea id="bio" class="form-control"
-              placeholder="Tell us a bit about yourself…">Founder at Colorlib. Building admin templates since 2014.</textarea>
-            <div class="form-help">Brief description for your profile. URLs are hyperlinked.</div>
-          </div>
 
-          <div class="form-actions right">
-            <button class="btn btn-outline">Discard</button>
-            <button class="btn btn-primary">Save changes</button>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <div class="row col-2">
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Notifications</div>
-            <div class="card-subtitle">Choose how we contact you.</div>
-          </div>
-        </div>
-        <div class="card-body" style="padding:6px 16px">
-          <div class="toggle-row">
-            <div>
-              <div class="label">Product updates</div>
-              <div class="desc">Get notified about new features and improvements.</div>
-            </div>
-            <div class="toggle on"></div>
-          </div>
-          <div class="toggle-row">
-            <div>
-              <div class="label">Weekly digest</div>
-              <div class="desc">A summary of activity, every Monday.</div>
-            </div>
-            <div class="toggle on"></div>
-          </div>
-          <div class="toggle-row">
-            <div>
-              <div class="label">Security alerts</div>
-              <div class="desc">Sign-ins from new devices and password changes.</div>
-            </div>
-            <div class="toggle on"></div>
-          </div>
-          <div class="toggle-row">
-            <div>
-              <div class="label">Marketing emails</div>
-              <div class="desc">Tips, deals, and partner offers.</div>
-            </div>
-            <div class="toggle"></div>
-          </div>
-        </div>
-      </div>
 
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Sessions</div>
-            <div class="card-subtitle">Devices currently signed into your account.</div>
-          </div>
-          <button class="btn btn-outline btn-sm">Sign out all</button>
-        </div>
-        <div class="card-body p-0">
-          <div class="table-responsive">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Device</th>
-                  <th>Location</th>
-                  <th>Last seen</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><span class="cell-strong">MacBook Pro</span>
-                    <div style="font-size:11px;color:var(--text-muted)">Chrome 120</div>
-                  </td>
-                  <td>Riga, LV</td>
-                  <td><span class="status status-green">Active now</span></td>
-                  <td style="text-align:right"></td>
-                </tr>
-                <tr>
-                  <td><span class="cell-strong">iPhone 15</span>
-                    <div style="font-size:11px;color:var(--text-muted)">Safari Mobile</div>
-                  </td>
-                  <td>Riga, LV</td>
-                  <td>2 hours ago</td>
-                  <td style="text-align:right"><button class="btn btn-outline btn-sm">Revoke</button></td>
-                </tr>
-                <tr>
-                  <td><span class="cell-strong">Windows PC</span>
-                    <div style="font-size:11px;color:var(--text-muted)">Edge 121</div>
-                  </td>
-                  <td>Tallinn, EE</td>
-                  <td>5 days ago</td>
-                  <td style="text-align:right"><button class="btn btn-outline btn-sm">Revoke</button></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Stats + Achievements row ── -->
-    <div class="row col-4-8">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Account stats</div>
-        </div>
-        <div class="card-body" style="padding:0">
-          <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border-color-light)">
-            <div style="padding:16px;border-right:1px solid var(--border-color-light);text-align:center">
-              <div style="font-size:22px;font-weight:600;color:var(--text)">142</div>
-              <div
-                style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px">
-                Projects</div>
-            </div>
-            <div style="padding:16px;text-align:center">
-              <div style="font-size:22px;font-weight:600;color:var(--text)">28</div>
-              <div
-                style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px">
-                Team</div>
-            </div>
-            <div
-              style="padding:16px;border-top:1px solid var(--border-color-light);border-right:1px solid var(--border-color-light);text-align:center">
-              <div style="font-size:22px;font-weight:600;color:var(--text)">1.2k</div>
-              <div
-                style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px">
-                Commits</div>
-            </div>
-            <div style="padding:16px;border-top:1px solid var(--border-color-light);text-align:center">
-              <div style="font-size:22px;font-weight:600;color:var(--text)">4.9</div>
-              <div
-                style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px">
-                Rating</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Achievements</div>
-            <div class="card-subtitle">Earned badges across the workspace.</div>
-          </div>
-          <a href="#" style="font-size:12px">See all</a>
-        </div>
-        <div class="card-body">
-          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px">
-            <div
-              style="text-align:center;padding:14px 8px;border:1px solid var(--border-color-light);border-radius:var(--radius);background:var(--primary-lt)">
-              <div
-                style="width:44px;height:44px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
-                <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M8 1l2 5 5 .5-4 3.5 1 5-4-2.5-4 2.5 1-5-4-3.5 5-.5z" />
-                </svg>
-              </div>
-              <div style="font-size:12px;font-weight:600;color:var(--text)">Top contributor</div>
-              <div style="font-size:10.5px;color:var(--text-muted);margin-top:2px">100+ PRs</div>
-            </div>
-            <div
-              style="text-align:center;padding:14px 8px;border:1px solid var(--border-color-light);border-radius:var(--radius)">
-              <div
-                style="width:44px;height:44px;border-radius:50%;background:var(--yellow-lt);color:var(--yellow);display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
-                <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <circle cx="8" cy="9" r="5" />
-                  <path d="M8 14l-2 1 1-3" />
-                </svg>
-              </div>
-              <div style="font-size:12px;font-weight:600;color:var(--text)">Reviewer</div>
-              <div style="font-size:10.5px;color:var(--text-muted);margin-top:2px">50+ reviews</div>
-            </div>
-            <div
-              style="text-align:center;padding:14px 8px;border:1px solid var(--border-color-light);border-radius:var(--radius)">
-              <div
-                style="width:44px;height:44px;border-radius:50%;background:var(--purple-lt);color:var(--purple);display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
-                <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M8 1l7 13H1L8 1z" />
-                </svg>
-              </div>
-              <div style="font-size:12px;font-weight:600;color:var(--text)">Early adopter</div>
-              <div style="font-size:10.5px;color:var(--text-muted);margin-top:2px">Joined 2014</div>
-            </div>
-            <div
-              style="text-align:center;padding:14px 8px;border:1px solid var(--border-color-light);border-radius:var(--radius)">
-              <div
-                style="width:44px;height:44px;border-radius:50%;background:var(--blue-lt);color:var(--blue);display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
-                <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M3 6h10M3 10h10M3 14h6" />
-                </svg>
-              </div>
-              <div style="font-size:12px;font-weight:600;color:var(--text)">Documenter</div>
-              <div style="font-size:10.5px;color:var(--text-muted);margin-top:2px">25+ articles</div>
-            </div>
-            <div
-              style="text-align:center;padding:14px 8px;border:1px solid var(--border-color-light);border-radius:var(--radius)">
-              <div
-                style="width:44px;height:44px;border-radius:50%;background:var(--green-lt);color:var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
-                <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M3 8l3 3 7-7" />
-                </svg>
-              </div>
-              <div style="font-size:12px;font-weight:600;color:var(--text)">Reliable</div>
-              <div style="font-size:10.5px;color:var(--text-muted);margin-top:2px">98% on-time</div>
-            </div>
-            <div
-              style="text-align:center;padding:14px 8px;border:1px solid var(--border-color-light);border-radius:var(--radius);opacity:.5">
-              <div
-                style="width:44px;height:44px;border-radius:50%;background:var(--bg-surface-secondary);color:var(--text-muted);display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
-                <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <rect x="4" y="6" width="8" height="6" rx="1.5" />
-                  <path d="M6 6V4a2 2 0 014 0v2" />
-                </svg>
-              </div>
-              <div style="font-size:12px;font-weight:600;color:var(--text)">Locked</div>
-              <div style="font-size:10.5px;color:var(--text-muted);margin-top:2px">200 PRs needed</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Connected accounts + Activity timeline ── -->
-    <div class="row col-2">
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Connected accounts</div>
-            <div class="card-subtitle">Sign in faster with these providers.</div>
-          </div>
-        </div>
-        <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
-          <div
-            style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--border-color-light);border-radius:var(--radius)">
-            <div
-              style="width:36px;height:36px;border-radius:8px;background:#0e1117;color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">
-              GH</div>
-            <div style="flex:1">
-              <div style="font-size:13px;font-weight:600;color:var(--text)">GitHub</div>
-              <div style="font-size:11.5px;color:var(--text-muted)">@aigars · connected since 2014</div>
-            </div>
-            <span class="status status-green">Connected</span>
-            <button class="btn btn-outline btn-sm">Disconnect</button>
-          </div>
-          <div
-            style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--border-color-light);border-radius:var(--radius)">
-            <div
-              style="width:36px;height:36px;border-radius:8px;background:#4285f4;color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">
-              G</div>
-            <div style="flex:1">
-              <div style="font-size:13px;font-weight:600;color:var(--text)">Google</div>
-              <div style="font-size:11.5px;color:var(--text-muted)">aigars@example.com</div>
-            </div>
-            <span class="status status-green">Connected</span>
-            <button class="btn btn-outline btn-sm">Disconnect</button>
-          </div>
-          <div
-            style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--border-color-light);border-radius:var(--radius)">
-            <div
-              style="width:36px;height:36px;border-radius:8px;background:#4a154b;color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">
-              SL</div>
-            <div style="flex:1">
-              <div style="font-size:13px;font-weight:600;color:var(--text)">Slack</div>
-              <div style="font-size:11.5px;color:var(--text-muted)">colorlib workspace</div>
-            </div>
-            <button class="btn btn-primary btn-sm">Connect</button>
-          </div>
-          <div
-            style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--border-color-light);border-radius:var(--radius)">
-            <div
-              style="width:36px;height:36px;border-radius:8px;background:#000;color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">
-              𝕏</div>
-            <div style="flex:1">
-              <div style="font-size:13px;font-weight:600;color:var(--text)">X (Twitter)</div>
-              <div style="font-size:11.5px;color:var(--text-muted)">@aigars</div>
-            </div>
-            <button class="btn btn-primary btn-sm">Connect</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Recent activity</div>
-        </div>
-        <div class="card-body">
-          <div class="timeline">
-            <div class="timeline-item is-primary">
-              <div class="ti-time">Just now</div>
-              <div class="ti-title">Profile photo updated</div>
-            </div>
-            <div class="timeline-item is-blue">
-              <div class="ti-time">2 hours ago</div>
-              <div class="ti-title">Signed in from <strong>iPhone 15</strong></div>
-              <div class="ti-desc">Riga, LV</div>
-            </div>
-            <div class="timeline-item is-green">
-              <div class="ti-time">Yesterday</div>
-              <div class="ti-title">Earned achievement: <strong>Reliable</strong></div>
-            </div>
-            <div class="timeline-item">
-              <div class="ti-time">3 days ago</div>
-              <div class="ti-title">Connected <strong>Google</strong> account</div>
-            </div>
-            <div class="timeline-item is-yellow">
-              <div class="ti-time">1 week ago</div>
-              <div class="ti-title">Two-factor authentication enabled</div>
-              <div class="ti-desc">Authenticator app · backup codes saved</div>
-            </div>
-            <div class="timeline-item">
-              <div class="ti-time">2 weeks ago</div>
-              <div class="ti-title">Joined team <strong>Colorlib</strong></div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

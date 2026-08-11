@@ -38,6 +38,7 @@
   .user-menu a:hover,
   .user-menu button:hover {
     background: rgba(0, 0, 0, .05);
+    text-decoration: none;
   }
 
   .user-menu form {
@@ -267,6 +268,10 @@
 <main class="main">
 
 
+  {% include 'partials/invite_modal.html' %}
+
+
+
   <div class="page-wrapper">
 
     <div class="page-header">
@@ -339,9 +344,10 @@
               <path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7" />
             </svg></div>
           <div class="stat-content">
-            <div class="stat-label">Total users</div>
-            <div class="stat-value-row"><span class="stat-value">12</span></div>
-            <div class="stat-subtext">3 active right now</div>
+            <div class="stat-label">Total Students</div>
+            <div class="stat-value-row"><span class="stat-value">{{ stats.total_students + stats.total_admin + 1
+                }}</span></div>
+            <div class="stat-subtext">Total for GIS-2</div>
           </div>
         </div>
       </div>
@@ -352,8 +358,8 @@
             </svg></div>
           <div class="stat-content">
             <div class="stat-label">Admins</div>
-            <div class="stat-value-row"><span class="stat-value">2</span></div>
-            <div class="stat-subtext">Owner + 1 admin</div>
+            <div class="stat-value-row"><span class="stat-value">{{ stats.total_admin+1 }}</span></div>
+            <div class="stat-subtext">Including super admin</div>
           </div>
         </div>
       </div>
@@ -365,7 +371,7 @@
             </svg></div>
           <div class="stat-content">
             <div class="stat-label">Pending invites</div>
-            <div class="stat-value-row"><span class="stat-value">2</span></div>
+            <div class="stat-value-row"><span class="stat-value">{{ stats.pending_invites }}</span></div>
             <div class="stat-subtext">Awaiting acceptance</div>
           </div>
         </div>
@@ -373,6 +379,7 @@
     </div>
 
     <div class="card">
+      <!-- table headers -->
       <div class="card-header" style="gap:12px;flex-wrap:wrap">
         <div class="users-filters">
           <div class="search-box" style="width:240px">
@@ -384,23 +391,24 @@
           </div>
           <select class="form-control" id="filter-role" style="width:140px;height:32px" aria-label="Filter by role">
             <option value="">All roles</option>
-            <option value="Owner">Owner</option>
-            <option value="Admin">Admin</option>
+            <option value="super_admin">Owner</option>
+            <option value="admin">Admin</option>
             <option value="student">Students</option>
           </select>
           <select class="form-control" id="filter-status" style="width:140px;height:32px" aria-label="Filter by status">
             <option value="">All statuses</option>
-            <option value="active">Active</option>
-            <option value="pending">Pending</option>
-            <option value="suspended">Suspended</option>
+            <option value="True">Active</option>
+            <option value="False">Pending</option>
           </select>
         </div>
       </div>
       <div class="card-body p-0">
         <div class="table-responsive">
 
+          <!-- skeleton loader -->
           <span class="skeleton hidden skeleton-rect" style="width:100%;height:100vh"></span>
 
+          <!-- table row -->
           <table class="table">
 
             <thead>
@@ -418,8 +426,8 @@
 
             <tbody style="width:100%;" id="users-rows">
               {% for user in users %}
-              <tr style="position: relative;" data-name="{{ user.name|lower }}" data-email="{{ user.email|lower }}"
-                data-role="{{ user.role }}" data-status="{{ user.status }}">
+              <tr style="position: relative;" data-name="{{ user.username|lower }}" data-email="{{ user.email|lower }}"
+                data-role="{{ user.role.value }}" data-status="{{ user.is_active }}">
                 <td>
                   <input type="checkbox" class="row-cb">
                 </td>
@@ -427,12 +435,12 @@
                 <td>
                   <div class="cell-customer">
                     <div style="color:red;" class="cell-avatar">
-                      {{ user.name[:2].upper() }}
+                      {{ user.username[:2].upper() }}
                     </div>
 
                     <div>
                       <div class="cell-strong">
-                        {{ user.name }}
+                        {{ user.username }}
                       </div>
 
                       <div style="font-size:11.5px;color:var(--text-muted)">
@@ -443,14 +451,18 @@
                 </td>
 
                 <td>
-                  <span class="role-chip">
-                    {{ user.role }}
+                  <span class="role-chip role-blue">
+                    {{ user.role.value }}
                   </span>
                 </td>
 
                 <td>
                   <span class="status">
-                    {{ user.status|title }}
+                    {% if user.is_active %}
+                      <span class="status status-green">Active</span>
+                    {% else %}
+                      <span class="status status-yellow">Pending</span>
+                    {% endif %}
                   </span>
                 </td>
 
@@ -459,7 +471,7 @@
                 </td>
 
                 <td>
-                  {{ user.joined }}
+                  {{ user.created_at.strftime('%m %b %Y') }}
                 </td>
 
                 <td>
@@ -487,7 +499,7 @@
 
                       <form action="#" method="POST">
                         <button type="submit">
-                          Send Reset Password
+                          Reset Password
                         </button>
                       </form>
 
@@ -502,6 +514,33 @@
 
           </table>
 
+          <!-- pagination -->
+          <div class="dt-layout-row">
+            <div class="dt-layout-cell dt-layout-start">
+              <div class="dt-info" aria-live="polite" id="DataTables_Table_0_info" role="status">Showing 1–10 of 20
+              </div>
+            </div>
+            <div class="dt-layout-cell dt-layout-end">
+              <div class="dt-paging">
+                <nav aria-label="pagination">
+                  <button class="dt-paging-button disabled first" role="link" type="button"
+                    aria-controls="DataTables_Table_0" aria-disabled="true" aria-label="First" data-dt-idx="first"
+                    tabindex="-1">«</button>
+                  <button class="dt-paging-button disabled previous" role="link" type="button"
+                    aria-controls="DataTables_Table_0" aria-disabled="true" aria-label="Previous" data-dt-idx="previous"
+                    tabindex="-1">←</button>
+                  <button class="dt-paging-button current" role="link" type="button" aria-controls="DataTables_Table_0"
+                    aria-current="page" data-dt-idx="0">1</button>
+                  <button class="dt-paging-button" role="link" type="button" aria-controls="DataTables_Table_0"
+                    data-dt-idx="1">2</button>
+                  <button class="dt-paging-button next" role="link" type="button" aria-controls="DataTables_Table_0"
+                    aria-label="Next" data-dt-idx="next">→</button>
+                  <button class="dt-paging-button last" role="link" type="button" aria-controls="DataTables_Table_0"
+                    aria-label="Last" data-dt-idx="last">»</button>
+                </nav>
+              </div>
+            </div>
+          </div>
 
         </div>
       </div>
@@ -511,6 +550,10 @@
 </main>
 
 <script>
+
+
+ 
+
   document.addEventListener("DOMContentLoaded", () => {
 
     const searchInput = document.getElementById("users-search");
@@ -694,6 +737,19 @@
 
   });
 
+  //invite modal
+  const form = document.getElementById('invite-form')
+  form.addEventListener('submit', async (e) => {
+
+    e.preventDefault();
+
+    const inviteForm = new FormData(form);
+
+    closeInviteModal();
+    inviteStudents(inviteForm);
+
+  });
+
   const table = document.querySelector('.table');
   const skeletonLoader = document.querySelector('.skeleton');
   const importResult = document.getElementById('importResult');
@@ -749,14 +805,14 @@
 
           return;
         }
-        
+
         showImportResult(
           'success',
           data.message || 'Import completed successfully',
           data.errors || []
         );
 
-    
+
       })
       .catch((err) => {
         showImportResult(
@@ -770,6 +826,69 @@
         table.style.display = 'table';
       });
   }
+
+
+  function inviteStudents(inviteForm) {
+
+    // Reset previous messages
+    importResult.classList.add('hidden');
+    importResult.innerHTML = '';
+
+    // Show skeleton
+    table.style.display = 'none';
+    skeletonLoader.classList.remove('hidden');
+
+    fetch("{{ url_for('admin.inviteUser') }}", {
+      method: 'POST',
+      body: inviteForm,
+      credentials: 'include'
+    })
+      .then(async (res) => {
+        const data = await res.json();
+
+        if (!res.ok) {
+
+          let errors = [];
+
+          if (Array.isArray(data.error)) {
+            errors = data.error;
+          } else if (typeof data.error === "object" && data.error !== null) {
+            errors = Object.entries(data.error).flatMap(
+              ([field, msgs]) =>
+                msgs.map(msg => `${field}: ${msg}`)
+            );
+          } else {
+            errors = [data.error || "An unknown error occurred"];
+          }
+
+          showImportResult(
+            "error",
+            "Invite could not be sent.\nPlease fix the following error/s and try again",
+            errors
+          );
+
+          return;
+        }
+
+        showImportResult(
+          "success",
+          data.message || "Invite completed successfully",
+          data.errors || []
+        );
+      })
+      .catch((err) => {
+        showImportResult(
+          "error",
+          "Invite failed",
+          [err.message]
+        );
+      })
+      .finally(() => {
+        skeletonLoader.classList.add("hidden");
+        table.style.display = "table";
+      });
+  }
+
 </script>
 
 {% endblock %}

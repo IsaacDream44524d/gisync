@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,11 +9,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     {% if title %}
-        <title> {{title}} | GISync</title>
+    <title> {{title}} | GISync</title>
     {% else %}
 
     <title>GISync</title>
-    {% endif %}<
+    {% endif %}
 
     <script>
         window.ROUTES = {
@@ -20,12 +21,17 @@
             userManagement: "{{ url_for('admin.userManagement') }}",
             profile: "{{ url_for('admin.profile') }}",
             settings: "{{ url_for('admin.settings') }}",
-            faq: "{{ url_for('admin.settings') }}",
+            faq: "{{ url_for('admin.faq') }}",
             calendar: "{{ url_for('admin.calendar') }}",
             workflow: "{{ url_for('admin.workflow') }}",
             notifications: "{{ url_for('admin.notifications') }}",
             fileManagement: "{{ url_for('admin.fileManagement') }}",
             logout: "{{ url_for('auth.logout') }}"
+        }
+
+        window.USER = {
+            username: '{{ current_user.username }}',
+            role: '{{ current_user.role.value }}'
         }
     </script>
 
@@ -33,13 +39,39 @@
     {{ vite.jsAsset }}
 
 </head>
+
 <body data-shell="admin" data-page="dashboard" data-breadcrumb="Home > Dashboard">
 
 
     {% block content %}
-        
-    {% endblock %}
-  
 
+    {% endblock %}
+
+
+
+    <script>
+        const inviteModal = document.getElementById("inviteModal");
+
+        document.getElementById("invite-btn").addEventListener("click", () => {
+            inviteModal.classList.add("show");
+        });
+
+        function closeInviteModal() {
+            inviteModal.classList.remove("show");
+        }
+
+        document.getElementById("closeInviteBtn")
+            .addEventListener("click", closeInviteModal);
+
+        document.getElementById("cancelInviteBtn")
+            .addEventListener("click", closeInviteModal);
+
+        inviteModal.addEventListener("click", (e) => {
+            if (e.target === inviteModal) {
+                closeInviteModal();
+            }
+        });
+    </script>
 </body>
+
 </html>

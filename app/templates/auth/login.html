@@ -86,7 +86,7 @@
                             {{ form.remember_me.label(class='check-box') }}
                         </div>
 
-                        <a href="{{ url_for('auth.reset') }}">Forgot Password?</a>
+                        <a href="{{ url_for('auth.resetRequest') }}">Forgot Password?</a>
                     </div>
 
                     <button type="submit" class="login-btn" name="{{ form.submit_btn.name }}" value="{{ form.submit_btn.value }}">

@@ -40,6 +40,8 @@
 </style>
 
 <main class="main">
+  {% include 'partials/invite_modal.html' %}
+
   <div class="page-wrapper">
 
     <!-- HEADERE -->
@@ -53,7 +55,7 @@
         </div>
 
         <div class="page-actions">
-          <button class="btn btn-outline">
+          <button class="btn btn-outline" id="invite-btn">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
               <path d="M8 2v12M2 8h12" />
             </svg>
@@ -84,9 +86,9 @@
           <div class="stat-content">
             <div class="stat-label">Total Students</div>
             <div class="stat-value-row">
-              <span class="stat-value">{{ stats.total_students }}</span>
+              <span class="stat-value">{{ stats.total_students + stats.total_admin + 1 }}</span>
             </div>
-            <div class="stat-subtext">+1 owner</div>
+            <div class="stat-subtext">GIS 2 class</div>
           </div>
 
         </div>

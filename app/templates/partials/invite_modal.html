@@ -1,0 +1,96 @@
+{% extends 'auth/form.html' %}
+
+{% block form %}
+
+<!-- invite Modal -->
+<div class="invite-modal-overlay" id="inviteModal">
+    <div class="invite-modal">
+
+        <div class="invite-modal-header">
+            <h3>Invite User</h3>
+            <button type="button" class="invite-close-btn" id="closeInviteBtn">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <form id='invite-form' method="POST">
+   
+            {{ form.hidden_tag() }}
+
+
+            <div class="form-group">
+
+                <div class="input-group-custom {% if form.fullname.errors %}is-invalid{% endif %}">
+                    <i class="bi bi-person"></i>
+                    {{ form.fullname(placeholder='Fullname') }}
+                    {% if form.fullname.errors %}
+                    <i style="font-size: 1rem; font-weight:800;" class="bi bi-exclamation-triangle"></i>
+                    {% endif %}
+                </div>
+
+                {% if form.fullname.errors %}
+                <div class="error-feedback">
+                    {% for error in form.fullname.errors %}
+                    <small class="form-error">{{ error }}</small>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+            </div>
+
+            <div class="form-group">
+
+                <div class="input-group-custom {% if form.email.errors %}is-invalid{% endif %}">
+                    <i class="bi bi-envelope"></i>
+                    {{ form.email(placeholder='Email') }}
+                    {% if form.email.errors %}
+                    <i style="font-size: 1rem; font-weight:800;" class="bi bi-exclamation-triangle"></i>
+                    {% endif %}
+                </div>
+
+                {% if form.email.errors %}
+                <div class="error-feedback">
+                    {% for error in form.email.errors %}
+                    <small class="form-error">{{ error }}</small>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+            </div>
+
+            <div class="form-group">
+                <div class="invite-field">
+                    <label for="{{ form.role.id }}" class="invite-label">{{form.role.label.text}}</label>
+                    <select name="role" class="invite-select" required>
+                        <option value="">Select role</option>
+                        {% for value, label in form.role.choices %}
+                            <option value="{{ value }}">
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <button type="button" class="btn btn-outline" id="cancelInviteBtn">
+                    Cancel
+                </button>
+
+                <button type="submit" class="btn btn-primary" name="{{ form.submit_btn.name }}"
+                    value="{{ form.submit_btn.value }}">
+                    Send Invitation
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+
+
+
+
+{% endblock %}
