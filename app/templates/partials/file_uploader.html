@@ -1,0 +1,43 @@
+<!-- file uploader Modal -->
+ 
+<div class="upload-modal-overlay" id="uploadModal">
+    <div class="upload-modal">
+        <div class="upload-header">
+            <h3>Upload Files</h3>
+            <button id="closeUploadModal" class="close-btn">
+                &times;
+            </button>
+        </div>
+
+        <form id="uploadForm">
+            <div class="upload-body">
+
+                <div class="dropzone" id="dropzone">
+                    <input type="file" id="fileInput" name="file" hidden>
+
+                    <div class="upload-icon">
+                        ⬆
+                    </div>
+
+                    <h4>Drag files here, or click to browse</h4>
+                    <p>
+                        XLSX supported ONLY
+                    </p>
+                </div>
+
+                <div id="selectedFile"></div>
+
+            </div>
+
+            <div class="upload-footer">
+                <button type="button" class="btn btn-secondary" id="cancelUpload">
+                    Cancel
+                </button>
+
+                <button type="submit" class="btn btn-primary">
+                    Upload File
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -4,6 +4,10 @@
 
 
 <main class="main">
+
+  {% include 'partials/invite_modal.html' %}
+
+
   <div class="page-wrapper">
 
     <div class="page-header">
@@ -13,7 +17,19 @@
           <h1 class="page-title">Settings</h1>
         </div>
       </div>
+
+
+      <div class="row">
+        <!-- Import Result Banner -->
+        <div id="importResult" class="import-result hidden"></div>
+
+        <!-- mock elements -->
+        <div class="mock-table"></div>
+        <div class="mock-skeleton"></div>
+      </div>
     </div>
+
+
 
     <div class="settings-layout">
       <!-- ── SECTION NAV ── -->
@@ -134,47 +150,47 @@
 
         <!-- TEAM,  SHOW ONLY WHEN USER IS SUPER ADMIN -->
         {% if current_user.role.value == 'super_admin' %}
-          <section class="settings-section" id="team">
-            <h2 class="settings-section-title">Team</h2>
-            <p class="settings-section-desc">Manage who can access this class.</p>
-            <div class="settings-actions" style="justify-content:flex-start;margin-bottom:12px">
-              <button class="btn btn-primary">+ Invite member</button>
+        <section class="settings-section" id="team">
+          <h2 class="settings-section-title">Team</h2>
+          <p class="settings-section-desc">Manage who can access this class.</p>
+          <div class="settings-actions" style="justify-content:flex-start;margin-bottom:12px">
+            <button class="btn" id="invite-btn">+ Invite member</button>
+          </div>
+          <div class="session-list">
+            <div class="session-row">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="cell-avatar" style="background:linear-gradient(135deg,var(--primary),var(--primary-dk))">I
+                </div>
+                <div>
+                  <div class="device">{{ current_user.username }}</div>
+                  <div class="meta">{{ current_user.email }}· Owner</div>
+                </div>
+              </div>
+              <span class="status status-green">Owner</span>
             </div>
-            <div class="session-list">
-              <div class="session-row">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <div class="cell-avatar" style="background:linear-gradient(135deg,var(--primary),var(--primary-dk))">I
-                  </div>
-                  <div>
-                    <div class="device">{{ current_user.username }}</div>
-                    <div class="meta">{{ current_user.email }}· Owner</div>
-                  </div>
+            <div class="session-row">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="cell-avatar" style="background:var(--azure)">SK</div>
+                <div>
+                  <div class="device">Sarah Kowalski</div>
+                  <div class="meta">sarah@example.com · Admin</div>
                 </div>
-                <span class="status status-green">Owner</span>
               </div>
-              <div class="session-row">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <div class="cell-avatar" style="background:var(--azure)">SK</div>
-                  <div>
-                    <div class="device">Sarah Kowalski</div>
-                    <div class="meta">sarah@example.com · Admin</div>
-                  </div>
+              <button class="btn btn-outline btn-sm">Manage</button>
+            </div>
+            <div class="session-row">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="cell-avatar" style="background:var(--purple)">MR</div>
+                <div>
+                  <div class="device">Michael Reyes</div>
+                  <div class="meta">michael@example.com · Admin</div>
                 </div>
-                <button class="btn btn-outline btn-sm">Manage</button>
               </div>
-              <div class="session-row">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <div class="cell-avatar" style="background:var(--purple)">MR</div>
-                  <div>
-                    <div class="device">Michael Reyes</div>
-                    <div class="meta">michael@example.com · Admin</div>
-                  </div>
-                </div>
-                <button class="btn btn-outline btn-sm">Manage</button>
-              </div>
+              <button class="btn btn-outline btn-sm">Manage</button>
+            </div>
 
-            </div>
-          </section>
+          </div>
+        </section>
         {% endif %}
 
 

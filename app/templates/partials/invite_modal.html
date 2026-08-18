@@ -14,7 +14,7 @@
         </div>
 
         <form id='invite-form' method="POST">
-   
+
             {{ form.hidden_tag() }}
 
 
@@ -64,9 +64,9 @@
                     <select name="role" class="invite-select" required>
                         <option value="">Select role</option>
                         {% for value, label in form.role.choices %}
-                            <option value="{{ value }}">
-                                {{ label }}
-                            </option>
+                        <option value="{{ value }}">
+                            {{ label }}
+                        </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -90,7 +90,5 @@
 </div>
 
 
+{% endblock form %}
 
-
-
-{% endblock %}
