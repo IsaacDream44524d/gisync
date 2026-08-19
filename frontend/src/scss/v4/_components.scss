@@ -109,7 +109,7 @@
 }
 
 // Table
-.table-responsive { overflow-x: auto; }
+// .table-responsive { overflow-x: auto; }
 table.table {
   width: 100%;
   border-collapse: collapse;
@@ -285,6 +285,20 @@ table.table tbody tr:hover { background: var(--bg-surface-secondary); }
 // ────────────────────────
 //  POPOVER MENU
 // ────────────────────────
+.menu-pop {
+  position: absolute;
+  z-index: 1100;
+  top: calc(100% + 6px);
+  min-width: 160px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 4px;
+  display: none;
+  flex-direction: column;
+  animation: menu-in 140ms cubic-bezier(0.2, 0, 0, 1);
+}
+
 .menu-popover {
   position: fixed;
   z-index: 1100;
@@ -297,6 +311,10 @@ table.table tbody tr:hover { background: var(--bg-surface-secondary); }
   display: flex;
   flex-direction: column;
   animation: menu-in 140ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.menu-pop.show {
+  display: flex;
 }
 @keyframes menu-in {
   from { opacity: 0; transform: translateY(-4px); }

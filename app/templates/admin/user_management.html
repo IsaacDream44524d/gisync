@@ -6,6 +6,8 @@
 
 <main class="main">
 
+  
+
 
   {% include 'partials/invite_modal.html' %}
   {% include 'partials/file_uploader.html'   %}
@@ -98,13 +100,13 @@
         </div>
       </div>
       <div class="card-body p-0">
-        <div style="position: relative;" class="table-responsive">
+        <div class="table-responsive">
 
           <!-- skeleton loader -->
           <span class="skeleton hidden skeleton-rect" style="width:100%;height:100vh"></span>
 
           <!-- table row -->
-          <table class="table">
+          <table style="position: relative;" class="table">
 
             <thead>
               <tr>
@@ -119,7 +121,7 @@
             </thead>
 
 
-            <tbody style="width:100%;" id="users-rows">
+            <tbody style="width:100%" ; id="users-rows">
               {% for user in users %}
               <tr style="position: relative;" data-name="{{ user.username|lower }}" data-email="{{ user.email|lower }}"
                 data-role="{{ user.role.value }}" data-status="{{ user.is_active }}">
@@ -179,26 +181,12 @@
                       </svg>
                     </button>
 
-                    <div class="user-menu" id="menu-{{ user.id }}">
-                      <a href="#">
-                        View Profile
-                      </a>
-
-                      <a href="#">
-                        Change Role
-                      </a>
-
-                      <a href="#">
-                        Suspend
-                      </a>
-
-                      <form action="#" method="POST">
-                        <button type="submit">
-                          Reset Password
-                        </button>
-                      </form>
-
-
+                    <div id="menu-{{ user.id }}" class="menu-pop" role="menu" style="right:0;">
+                      <button type="button" class="menu-item" role="menuitem">View profile</button>
+                      <button type="button" class="menu-item" role="menuitem">Reset password</button>
+                      <button type="button" class="menu-item" role="menuitem">change role</button>
+                      <div class="menu-separator"></div>
+                      <button type="button" class="menu-item" role="menuitem">Suspend</button>
                     </div>
 
                   </div>
@@ -324,10 +312,11 @@
 
   });
 
+  //add logic to remove popover when scolling
   function toggleMenu(userId) {
 
     document
-      .querySelectorAll(".user-menu")
+      .querySelectorAll(".menu-pop")
       .forEach(menu => {
 
         if (menu.id !== `menu-${userId}`) {
@@ -347,13 +336,20 @@
     if (!e.target.closest(".user-actions")) {
 
       document
-        .querySelectorAll(".user-menu")
+        .querySelectorAll(".menu-pop")
         .forEach(menu =>
           menu.classList.remove("show")
+          
         );
+
+        
     }
 
+   
+
   });
+
+  
 
   
   const modal = document.getElementById("uploadModal");

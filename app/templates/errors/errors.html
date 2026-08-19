@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,23 +8,72 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     {% if title %}
-        <title> {{title}} | GISync</title>
+    <title> {{title}} | GISync</title>
     {% else %}
 
     <title>GISync</title>
-    {% endif %}<
+    {% endif %} {{ vite.cssAsset }} {{ vite.jsAsset }}
+ </head>
 
+<style>
+    
+    .error-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: var(--body-bg);
+        text-align: center;
+    }
 
-    {{ vite.cssAsset }}
-    {{ vite.jsAsset }}
+    .error-content {
+        max-width: 500px;
+    }
 
-</head>
+    .error-code {
+        font-size: 96px;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: -3px;
+        background: linear-gradient(135deg, var(--primary), var(--azure));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 8px;
+    }
+
+    .error-title {
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 8px;
+    }
+
+    .error-message {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-bottom: 24px;
+        line-height: 1.5;
+    }
+
+    .error-actions {
+        display: flex;
+        gap: var(--space-2);
+        justify-content: center;
+    }
+    a:hover {
+        text-decoration: none;
+    }
+</style>
+
 <body data-shell="admin" data-page="dashboard" data-breadcrumb="Home > Dashboard">
 
 
     {% block error %}
-        
+
     {% endblock %}
-    
+
 </body>
+
 </html>

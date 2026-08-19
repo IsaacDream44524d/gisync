@@ -41,41 +41,6 @@ def fileManagement():
 def workflow():
     return render_template('admin/kanban.html', title='workflow')
 
-# all users routes relocate
-@admin.route('/profile')
-@login_required
-@role_required(UserRole.SUPER_ADMIN)
-def profile():
-    return render_template('profile.html', title='profile')
-
-
-@admin.route('/settings')
-@login_required
-@role_required(UserRole.SUPER_ADMIN)
-def settings():
-    form = InviteForm()
-    return render_template('settings.html', title='settings', form=form)
-
-
-@admin.route('/faq')
-@login_required
-@role_required(UserRole.SUPER_ADMIN)
-def faq():
-    return render_template('faq.html', title='faq')
-
-
-@admin.route('/notifications')
-@login_required
-@role_required(UserRole.SUPER_ADMIN)
-def notifications():
-    return render_template('notifications.html', title='notifications')
-
-
-@admin.route('/calendar')
-@login_required
-@role_required(UserRole.SUPER_ADMIN)
-def calendar():
-    return render_template('calendar.html', title='calendar')
 
 #AFTER CREATING A USER OR UPLOADING A FILE DO 'cache.delete(admin-stats)'
 

@@ -20,6 +20,8 @@ auth = Blueprint('auth', __name__, url_prefix='/auth')
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
+        if current_user.role.value == 'student':
+            return redirect(url_for('student.dashboard'))
         return redirect(url_for('admin.dashboard'))
 
     form = LoginForm()
@@ -38,7 +40,17 @@ def login():
         #redirect user to the page they wanted
         next_page = request.args.get('next')
         if not next_page or not next_page.startswith('/'):
-            next_page = url_for('admin.dashboard')
+
+            if current_user.is_authenticated:
+
+                if current_user.role.value == 'student':
+                    next_page = url_for('student.dashboard')
+                
+                else:
+                    next_page = url_for('admin.dashboard')
+                    
+            next_page = url_for('auth.login')
+
 
         return redirect(next_page)
 
@@ -57,7 +69,9 @@ def logout():
 @auth.route('/Reset-Password', methods=['POST', 'GET'])
 def resetRequest():
     if current_user.is_authenticated:
-        return redirect(url_for('main.home'))
+        if current_user.role.value == 'student':
+            return redirect(url_for('student.dashboard'))
+        return redirect(url_for('admin.dashboard'))
 
     form = RequestResetForm()
     if form.validate_on_submit():
@@ -71,7 +85,7 @@ def resetRequest():
          
     return render_template('auth/reset_request.html', title='Reset password', form=form)
 
-@auth.route('/trial', methods=['POST', 'GET'])
+@auth.route('/', methods=['POST', 'GET'])
 def reset():
     if current_user.is_authenticated:
         return redirect(url_for('admin.test'))

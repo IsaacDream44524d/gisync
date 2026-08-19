@@ -47,10 +47,14 @@ def create_app():
 
     from app.routes.admin import admin
     from app.routes.auth import auth
+    from app.routes.main import main
+    from app.routes.student import student
     
     app.register_blueprint(admin, url_prefix='/admin')
     app.register_blueprint(auth, url_prefix='/auth')
     app.register_blueprint(errors)
+    app.register_blueprint(main)
+    app.register_blueprint(student)
 
     @app.route('/')
     def index():

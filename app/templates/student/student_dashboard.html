@@ -1,0 +1,288 @@
+{% extends 'student_base.html' %}
+
+{% block content %}
+
+<style>
+    table.table td {
+        padding: 16px 16px;
+        border-bottom: 1px solid var(--border-color-light);
+        color: var(--text-secondary);
+        vertical-align: middle;
+    }
+</style>
+
+<main class="main">
+    <div class="page-wrapper">
+
+        <div class="page-header">
+            <div class="page-header-row">
+                <div>
+                    <div class="page-title">Welcome Back, {{ current_user.username }}</div>
+                    <h1 class="page-pretitle">Here's what's happening with your academics</h1>
+                </div>
+
+                {% if current_user.role.value == 'admin' or current_user.role.value == 'super_admin' %}
+
+                    <div class="page-action">
+                        <a href="{{url_for('admin.dashboard')}}">
+                            <div class="btn btn-outline">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <path d="M2 14L14 2M14 2H6M14 2v8"></path>
+                                </svg>
+                                Admin Dashboard
+                            </div>
+
+                        </a>
+                    </div>
+                    
+                {% endif %}
+                
+            </div>
+
+
+        </div>
+
+
+
+        <div class="row col-4 faq-quick">
+            <a class="card faq-card" href="{{ url_for('main.profile') }}">
+                <div class="faq-card-icon" style="background:var(--primary-lt);color:var(--primary)">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.5">
+                        <path d="M12 2v20M2 12h20" />
+                    </svg>
+                </div>
+                <div class="stat-label">Today's Classes</div>
+                <div style="font-size:30px;font-weight:700;color:var(--text);line-height:1">3</div>
+                <div class="link">View timetable &rarr;</div>
+            </a>
+
+            <a class="card faq-card" href="{{ url_for('auth.logout') }}">
+                <div class="faq-card-icon" style="background:var(--blue-lt);color:var(--blue)">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.5">
+                        <rect x="2" y="6" width="20" height="14" rx="2" />
+                        <path d="M2 10h20" />
+                    </svg>
+                </div>
+                <div class="title">Upcoming Test</div>
+                <div style="font-size:30px;font-weight:700;color:var(--text);line-height:1">2</div>
+                <div class="link">View test &rarr;</div>
+            </a>
+
+            <a class="card faq-card" href="{{ url_for('main.calendar') }}">
+                <div class="faq-card-icon" style="background:var(--green-lt);color:var(--green)">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.5">
+                        <path d="M12 2l8 4v6c0 5-4 9-8 10-4-1-8-5-8-10V6l8-4z" />
+                    </svg>
+                </div>
+                <div class="title">Upcoming Exams</div>
+                <div style="font-size:30px;font-weight:700;color:var(--text);line-height:1">4</div>
+                <div class="link">View exams &rarr;</div>
+            </a>
+
+            <a class="card faq-card" href="{{ url_for('main.calendar') }}">
+                <div class="faq-card-icon" style="background:var(--green-lt);color:var(--green)">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.5">
+                        <path d="M12 2l8 4v6c0 5-4 9-8 10-4-1-8-5-8-10V6l8-4z" />
+                    </svg>
+                </div>
+                <div class="title">Notes Available</div>
+                <div style="font-size:30px;font-weight:700;color:var(--text);line-height:1">12</div>
+                <div class="link">View notes &rarr;</div>
+            </a>
+        </div>
+
+        <div class="row col-8-4">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Weekly Timetable</div>
+                        <div class="card-subtitle">Latest class schedules</div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Monday</th>
+                                    <th>Tuesday</th>
+                                    <th>Wednesday</th>
+                                    <th>Thursday</th>
+                                    <th>Friday</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>08:00 - 10:00</td>
+                                    <td>GNSS-2101</td>
+                                    <td>DSAL-2101</td>
+                                    <td>GNSS-2101</td>
+                                    <td>PRSS-2101</td>
+                                    <td>PRGI-2101</td>
+                                </tr>
+
+                                <tr>
+                                    <td>10:00 - 12:00</td>
+                                    <td>GNSS-2101</td>
+                                    <td>DSAL-2101</td>
+                                    <td>GNSS-2101</td>
+                                    <td>PRSS-2101</td>
+                                    <td>PRGI-2101</td>
+                                </tr>
+
+                                <tr>
+                                    <td>12:00 - 13:00</td>
+                                    <td>Break</td>
+                                    <td>Break</td>
+                                    <td>Break</td>
+                                    <td>Break</td>
+                                    <td>Break</td>
+                                </tr>
+
+                                <tr>
+                                    <td>13:00 - 15:00</td>
+                                    <td>GNSS-2101</td>
+                                    <td>DSAL-2101</td>
+                                    <td>GNSS-2101</td>
+                                    <td>PRSS-2101</td>
+                                    <td>PRGI-2101</td>
+                                </tr>
+
+                                <tr>
+                                    <td>15:00 - 17:00</td>
+                                    <td>GNSS-2101</td>
+                                    <td>DSAL-2101</td>
+                                    <td>GNSS-2101</td>
+                                    <td>PRSS-2101</td>
+                                    <td>PRGI-2101</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-primary">
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M8 1v10M5 8l3 3 3-3M2 14h12"></path>
+                        </svg>
+                        Download Timetable(PDF)
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Announcements</div>
+                    <div class="card-options">
+                        <button class="btn btn-outline btn-sm">View All →</button>
+                    </div>
+                </div>
+                <div class="card-body" style="padding:8px 16px">
+                    <ul class="activity-list">
+                        <li class="activity-item">
+                            <div class="activity-avatar"
+                                style="background:linear-gradient(135deg,var(--primary),var(--primary-dk))">SK</div>
+                            <div>
+                                <div class="activity-body"><strong>Sarah K.</strong> placed a new order for $245.00
+                                </div>
+                                <div class="activity-time">2 min ago</div>
+                            </div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-avatar" style="background:linear-gradient(135deg,var(--blue),#0550a0)">
+                                MR</div>
+                            <div>
+                                <div class="activity-body"><strong>Michael R.</strong> registered a new account</div>
+                                <div class="activity-time">18 min ago</div>
+                            </div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-avatar"
+                                style="background:linear-gradient(135deg,var(--green),#1a8a32)">SY</div>
+                            <div>
+                                <div class="activity-body"><strong>Payment</strong> processed — Invoice #4521</div>
+                                <div class="activity-time">45 min ago</div>
+                            </div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-avatar"
+                                style="background:linear-gradient(135deg,var(--yellow),#c97f00)">JL</div>
+                            <div>
+                                <div class="activity-body"><strong>Jeffie L.</strong> reviewed <strong>Dashboard
+                                        Kit</strong></div>
+                                <div class="activity-time">1 hour ago</div>
+                            </div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-avatar"
+                                style="background:linear-gradient(135deg,var(--purple),#8a2da0)">EL</div>
+                            <div>
+                                <div class="activity-body"><strong>Emmy L.</strong> created project <strong>Morning
+                                        Clock</strong></div>
+                                <div class="activity-time">4 hours ago</div>
+                            </div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-avatar" style="background:linear-gradient(135deg,var(--red),#a82b2b)">
+                                DS</div>
+                            <div>
+                                <div class="activity-body"><strong>Shipment</strong> dispatched — Order #3847</div>
+                                <div class="activity-time">6 hours ago</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="card-header">
+                <div class="card-title">Recent Notes</div>
+                <div class="card-options">
+                    <button class="btn btn-outline btn-sm">View All →</button>
+                </div>
+            </div>
+
+            <div class="card-body row col-5">
+
+                <a class="card faq-card" href="{{ url_for('main.profile') }}">
+                    <div class="faq-card-icon" style="background:var(--primary-lt);color:var(--primary)">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5">
+                            <path d="M12 2v20M2 12h20" />
+                        </svg>
+                    </div>
+                    <div class="stat-label">Today's Classes</div>
+                    <div style="font-size:30px;font-weight:700;color:var(--text);line-height:1">3</div>
+                    <div class="link">View timetable &rarr;</div>
+                </a>
+
+                <a class="card faq-card" href="{{ url_for('auth.logout') }}">
+                    <div class="faq-card-icon" style="background:var(--blue-lt);color:var(--blue)">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5">
+                            <rect x="2" y="6" width="20" height="14" rx="2" />
+                            <path d="M2 10h20" />
+                        </svg>
+                    </div>
+                    <div class="title">Upcoming Test</div>
+                    <div style="font-size:30px;font-weight:700;color:var(--text);line-height:1">2</div>
+                    <div class="link">View test &rarr;</div>
+                </a>
+
+            </div>
+        </div>
+
+    </div>
+</main>
+
+
+
+{% endblock %}

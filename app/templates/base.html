@@ -15,16 +15,27 @@
     <title>GISync</title>
     {% endif %}
 
+    
+
+    
+    {% if current_user.role.value == 'student' %}
+        {{ vite.cssAsset }}
+    {% else %}
+        {{ vite.jsAsset }}
+        {{ vite.cssAsset }}
+        
+    {% endif %}
+    
     <script>
         window.ROUTES = {
             dashboard: "{{ url_for('admin.dashboard') }}",
             userManagement: "{{ url_for('admin.userManagement') }}",
-            profile: "{{ url_for('admin.profile') }}",
-            settings: "{{ url_for('admin.settings') }}",
-            faq: "{{ url_for('admin.faq') }}",
-            calendar: "{{ url_for('admin.calendar') }}",
+            profile: "{{ url_for('main.profile') }}",
+            settings: "{{ url_for('main.settings') }}",
+            faq: "{{ url_for('main.faq') }}",
+            calendar: "{{ url_for('main.calendar') }}",
             workflow: "{{ url_for('admin.workflow') }}",
-            notifications: "{{ url_for('admin.notifications') }}",
+            notifications: "{{ url_for('main.notifications') }}",
             fileManagement: "{{ url_for('admin.fileManagement') }}",
             logout: "{{ url_for('auth.logout') }}"
         }
@@ -34,9 +45,6 @@
             role: '{{ current_user.role.value }}'
         }
     </script>
-
-    {{ vite.cssAsset }}
-    {{ vite.jsAsset }}
 
 </head>
 
@@ -133,7 +141,7 @@
     max-width: 700px;
     max-height: 90vh;
     background: #fff;
-    border-radius: 16px;
+    border-radius: 12px;
     overflow: hidden;
     display: flex;
     flex-direction: column;

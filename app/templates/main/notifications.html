@@ -30,7 +30,7 @@
     display: none;
     background: #F5F7FB;
     border-radius: 24px;
-    border: 1px solid #ececec;
+    border: 1px solid var(--border-color);
     box-shadow:
       0 10px 40px rgba(15, 23, 42, .05),
       0 2px 8px rgba(15, 23, 42, .03);
@@ -40,6 +40,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 9999;
+    max-height: fit-content;
   }
 
   .notify-card.show {
@@ -58,9 +59,11 @@
     line-height: 1.2;
   }
 
+
+
   .notify-header p {
     margin-top: 8px;
-    color: var(--muted);
+    color: var(--text-muted);
     font-size: 1rem;
   }
 
@@ -97,7 +100,7 @@
 
   .form-group input[type="text"] {
     padding: 18px 20px;
-    background: #fff;
+    background: var(--bg-surface);
     border: 1px solid var(--border);
     border-radius: 16px;
   }
@@ -144,7 +147,7 @@
     height: 36px;
     border-radius: 10px;
     background: var(--accent-bg);
-    color: var(--accent);
+    color: var(--primary, #04060b);
 
     display: flex;
     align-items: center;
@@ -359,6 +362,9 @@
 
 
 <main class="main">
+  {% if current_user.role.value == 'student' %}
+    {% include 'partials/student_nav.html'   %}
+  {% endif %}
 
   {% include 'partials/notification_modal.html' %}
 
