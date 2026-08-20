@@ -24,12 +24,13 @@ def timetable():
 def exams():
     pass
 
-@student.route('/notes')
-@login_required
-def notes():
-    pass
 
 @student.route('/downloads')
 @login_required
 def downloads():
     pass
+
+@student.route('/notes')
+@login_required
+def notes():
+    return render_template('student/notes.html', title='notes')

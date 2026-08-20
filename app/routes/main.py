@@ -36,3 +36,5 @@ def notifications():
 @login_required
 def calendar():
     return render_template('main/calendar.html', title='calendar')
+
+

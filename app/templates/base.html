@@ -457,6 +457,7 @@
             // Show skeleton
             table.style.display = 'none';
             skeletonLoader.classList.remove('hidden');
+            
 
             fetch("{{ url_for('admin.inviteUser') }}", {
                 method: 'POST',
@@ -480,12 +481,13 @@
                         } else {
                             errors = [data.error || "An unknown error occurred"];
                         }
-
+                        
                         showImportResult(
                             "error",
                             "Invite could not be sent.\nPlease fix the following error/s and try again",
                             errors
                         );
+                        
 
                         return;
                     }
@@ -506,6 +508,7 @@
                 .finally(() => {
                     skeletonLoader.classList.add("hidden");
                     table.style.display = "table";
+                    
                 });
         }
 

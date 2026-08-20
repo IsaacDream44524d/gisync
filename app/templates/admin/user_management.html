@@ -172,14 +172,15 @@
                 </td>
 
                 <td>
-                  <div class="user-actions">
-                    <button type="button" class="opt-btn" onclick="toggleMenu('{{ user.id }}')">
+                  <div style="position: relative;" class="user-actions">
+                    <button type="button" class="opt-btn" onclick="toggleMenu('{{ user.id }}', this, event)">
                       <svg viewBox="0 0 16 16" fill="currentColor">
                         <circle cx="8" cy="3" r="1.2" />
                         <circle cx="8" cy="8" r="1.2" />
                         <circle cx="8" cy="13" r="1.2" />
                       </svg>
                     </button>
+                  
 
                     <div id="menu-{{ user.id }}" class="menu-pop" role="menu" style="right:0;">
                       <button type="button" class="menu-item" role="menuitem">View profile</button>
@@ -190,6 +191,8 @@
                     </div>
 
                   </div>
+
+                 
                 </td>
               </tr>
               {% endfor %}
@@ -313,22 +316,58 @@
   });
 
   //add logic to remove popover when scolling
-  function toggleMenu(userId) {
+  function toggleMenu(userId, button, e) {
 
+    e.stopPropagation()
+
+    menu = document.getElementById(`menu-${userId}`);
+
+    window.onclick = function() {
+      menu.classList.remove("open-up", "open-down");
+      menu.style.display = 'none';
+    }
+
+    //close current opened menu
     document
       .querySelectorAll(".menu-pop")
       .forEach(menu => {
 
         if (menu.id !== `menu-${userId}`) {
-          menu.classList.remove("show");
+          menu.classList.remove("open-up", "open-down");
+          menu.style.display = 'none';
         }
 
       });
 
-    document
-      .getElementById(`menu-${userId}`)
-      .classList
-      .toggle("show");
+    //toggle menu open
+    const isOpen = menu.style.display === 'block';
+
+    if (isOpen) {
+      menu.style.display = 'none';
+      menu.classList.remove("open-up", "open-down");
+      return;
+    }
+
+    menu.style.visibility = 'hidden';
+    menu.style.display = 'block';
+
+    const buttonRect = button.getBoundingClientRect();
+    const menuHeight = menu.offsetHeight;
+
+    const spaceAbove = buttonRect.top;
+    const spaceBelow = window.innerHeight - buttonRect.bottom
+
+    const margin = 9;
+
+    if (spaceBelow < spaceAbove + margin) {
+      menu.classList.add('open-up')
+    } else {
+      menu.classList.add('open-down');
+    }
+
+    menu.style.visibility = 'visible';
+
+    
   }
 
   document.addEventListener("click", function (e) {

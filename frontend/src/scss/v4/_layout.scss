@@ -576,7 +576,8 @@
   // minmax(0, 1fr) — without it a wide intrinsic child (table, code block,
   // long unbroken text) pushes the column wider than the viewport, which
   // forces the mobile browser to scale the whole layout to fit.
-  .col-4, .col-5, .col-3, .col-2 { grid-template-columns: minmax(0, 1fr); }
+  .col-5, .col-3, .col-2 { grid-template-columns: minmax(0, 1fr); }
+  .col-4 { grid-template-columns: minmax(1); }
   .page-wrapper { padding: 12px; }
   body.sidebar-open { overflow: hidden; }
   // Mobile rail mode never applies — drawer handles narrow viewports.
