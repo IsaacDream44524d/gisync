@@ -310,9 +310,6 @@
 
 
 <main class="main">
-  {% if current_user.role.value == 'student' %}
-    {% include 'partials/student_nav.html'   %}
-  {% endif %}
 
   {% include 'partials/notification_modal.html' %}
 
@@ -324,11 +321,18 @@
           <div class="page-pretitle">Activity</div>
           <h1 class="page-title">Notifications</h1>
         </div>
-        <div class="page-actions">
-          <button class="btn btn-outline" id="notification-btn"><span
-              style="font-size: 1.3rem; color:#E05A29; font-weight:bolder;">+</span>Post announcement</button>
 
-        </div>
+        <!-- dont show add notification btn to students -->
+        {% if current_user.role.value != 'student' %}
+
+          <div class="page-actions">
+            <button class="btn btn-outline" id="notification-btn"><span
+                style="font-size: 1.3rem; color:#E05A29; font-weight:bolder;">+</span>Post announcement</button>
+
+          </div>
+          
+        {% endif %}
+        
       </div>
     </div>
 

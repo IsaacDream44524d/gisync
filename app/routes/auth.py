@@ -21,7 +21,10 @@ auth = Blueprint('auth', __name__, url_prefix='/auth')
 def login():
     if current_user.is_authenticated:
         if current_user.role.value == 'student':
+            session['current_view'] = 'student'
             return redirect(url_for('student.dashboard'))
+
+        session['current_view'] = 'admin'
         return redirect(url_for('admin.dashboard'))
 
     form = LoginForm()

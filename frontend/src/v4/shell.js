@@ -11,7 +11,7 @@ import { showModal } from './modal.js';
 
 function injectShellIfMissing() {
   const body = document.body;
-  if (body.querySelector('.sidebar')) {return;}
+  if (body.querySelector('.sidebar')) { return; }
 
   const activeKey = body.dataset.page || '';
   const breadcrumb = body.dataset.breadcrumb
@@ -19,10 +19,15 @@ function injectShellIfMissing() {
     : ['Home'];
 
   const { sidebar, topbar, footer } = renderShell({ activeKey, breadcrumb });
-
   const tpl = document.createElement('template');
-  tpl.innerHTML = sidebar.trim();
-  body.insertBefore(tpl.content.firstElementChild, body.firstChild);
+
+  // don't load the sidebar if the current view is for student
+  // a student sidebar will be loaded from a separate file in partials folder
+  if (window.VIEW.currentView != 'student') {
+    
+    tpl.innerHTML = sidebar.trim();
+    body.insertBefore(tpl.content.firstElementChild, body.firstChild);
+  }
 
   const mainEl = body.querySelector('main.main');
   tpl.innerHTML = topbar.trim();
@@ -45,7 +50,7 @@ const SUBMENU_STATE_KEY = 'gentelella:nav-open';
 function getStoredOpenIndex() {
   try {
     const raw = sessionStorage.getItem(SUBMENU_STATE_KEY);
-    if (raw === null) {return null;}
+    if (raw === null) { return null; }
     const n = parseInt(raw, 10);
     return Number.isNaN(n) ? null : n;
   } catch (_e) { return null; }
@@ -53,21 +58,21 @@ function getStoredOpenIndex() {
 
 function setStoredOpenIndex(idx) {
   try {
-    if (idx === null) {sessionStorage.removeItem(SUBMENU_STATE_KEY);}
-    else {sessionStorage.setItem(SUBMENU_STATE_KEY, String(idx));}
+    if (idx === null) { sessionStorage.removeItem(SUBMENU_STATE_KEY); }
+    else { sessionStorage.setItem(SUBMENU_STATE_KEY, String(idx)); }
   } catch (_e) { /* private mode */ }
 }
 
 function bindNavSubmenus() {
   const trees = [...document.querySelectorAll('.sidebar .nav-tree')];
-  if (!trees.length) {return;}
+  if (!trees.length) { return; }
 
   const closeAll = (except) => {
     trees.forEach((t) => {
-      if (t === except) {return;}
+      if (t === except) { return; }
       t.classList.remove('open');
       const btn = t.querySelector('.nav-toggle');
-      if (btn) {btn.setAttribute('aria-expanded', 'false');}
+      if (btn) { btn.setAttribute('aria-expanded', 'false'); }
     });
   };
 
@@ -78,12 +83,12 @@ function bindNavSubmenus() {
     closeAll(trees[stored]);
     trees[stored].classList.add('open');
     const btn = trees[stored].querySelector('.nav-toggle');
-    if (btn) {btn.setAttribute('aria-expanded', 'true');}
+    if (btn) { btn.setAttribute('aria-expanded', 'true'); }
   }
 
   trees.forEach((tree, i) => {
     const btn = tree.querySelector('.nav-toggle');
-    if (!btn) {return;}
+    if (!btn) { return; }
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       const willOpen = !tree.classList.contains('open');
@@ -105,7 +110,7 @@ function applyRailLabels() {
   // Sets data-rail-label on every nav-link so the CSS tooltip has text to show.
   document.querySelectorAll('.sidebar .nav-link').forEach((link) => {
     const text = link.querySelector('.nav-text')?.textContent.trim();
-    if (text) {link.setAttribute('data-rail-label', text);}
+    if (text) { link.setAttribute('data-rail-label', text); }
   });
 }
 
@@ -116,12 +121,12 @@ function bindRailFlyouts() {
   // behavior never fires when we're collapsed.
   document.querySelectorAll('.sidebar .nav-toggle').forEach((btn) => {
     btn.addEventListener('click', (e) => {
-      if (!document.body.classList.contains('sidebar-rail')) {return;}
-      if (!isDesktop()) {return;}
+      if (!document.body.classList.contains('sidebar-rail')) { return; }
+      if (!isDesktop()) { return; }
       e.preventDefault();
       e.stopPropagation();
       const tree = btn.closest('.nav-tree');
-      if (!tree) {return;}
+      if (!tree) { return; }
       const items = [...tree.querySelectorAll('.nav-sublink')].map((a) => ({
         label: a.textContent.trim(),
         action: () => { window.location.href = a.getAttribute('href'); }
@@ -134,7 +139,7 @@ function bindRailFlyouts() {
 function bindSidebarToggle() {
   const sidebar = document.querySelector('.sidebar');
   const toggle = document.querySelector('.sidebar-toggle');
-  if (!sidebar || !toggle) {return;}
+  if (!sidebar || !toggle) { return; }
 
   let backdrop = document.querySelector('.sidebar-backdrop');
   if (!backdrop) {
@@ -164,14 +169,14 @@ function bindSidebarToggle() {
     toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
     toggle.setAttribute('aria-label', on ? 'Expand sidebar' : 'Collapse sidebar');
     try { localStorage.setItem(RAIL_KEY, on ? '1' : '0'); } catch (_e) { /* ignore */ }
-    if (on) {applyRailLabels();}
+    if (on) { applyRailLabels(); }
   };
 
   // Restore stored rail preference (desktop only). Mobile ignores it so the
   // drawer/sidebar isn't shown rail-style on small screens.
   let stored = '0';
   try { stored = localStorage.getItem(RAIL_KEY) || '0'; } catch (_e) { /* ignore */ }
-  if (stored === '1' && isDesktop()) {setRail(true);}
+  if (stored === '1' && isDesktop()) { setRail(true); }
 
   toggle.addEventListener('click', () => {
     if (isDesktop()) {
@@ -182,7 +187,7 @@ function bindSidebarToggle() {
   });
   backdrop.addEventListener('click', drawerClose);
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && sidebar.classList.contains('open')) {drawerClose();}
+    if (e.key === 'Escape' && sidebar.classList.contains('open')) { drawerClose(); }
   });
 
   // Viewport changes: desktop ↔ mobile. Reset state coherently.
@@ -205,7 +210,7 @@ function bindSidebarToggle() {
 
 function bindThemeToggle() {
   const btn = document.querySelector('.theme-toggle');
-  if (!btn) {return;}
+  if (!btn) { return; }
 
   const apply = (theme) => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -227,7 +232,7 @@ function bindThemeToggle() {
   mq.addEventListener('change', (e) => {
     let stored;
     try { stored = localStorage.getItem('theme'); } catch (_e) { /* ignore */ }
-    if (stored) {return;}
+    if (stored) { return; }
     apply(e.matches ? 'dark' : 'light');
   });
 }
@@ -237,11 +242,11 @@ function bindThemeToggle() {
 // ────────────────────────
 // notification data to be rendered from db
 const NOTIFICATIONS = [
-  { kind: 'info',   from: 'Stripe',  text: 'Payment of $499.00 received', time: '2m', unread: true },
-  { kind: 'task',   from: 'GitHub',  text: 'PR #248 ready for review',     time: '14m', unread: true },
-  { kind: 'alert',  from: 'Linear',  text: 'GEN-128 marked as urgent',     time: '1h', unread: true },
-  { kind: 'info',   from: 'Vercel',  text: 'Deployment succeeded in 28s',  time: '3h', unread: false },
-  { kind: 'info',   from: 'Notion',  text: 'You were mentioned in Q2 OKRs', time: 'Yesterday', unread: false }
+  { kind: 'info', from: 'Stripe', text: 'Payment of $499.00 received', time: '2m', unread: true },
+  { kind: 'task', from: 'GitHub', text: 'PR #248 ready for review', time: '14m', unread: true },
+  { kind: 'alert', from: 'Linear', text: 'GEN-128 marked as urgent', time: '1h', unread: true },
+  { kind: 'info', from: 'Vercel', text: 'Deployment succeeded in 28s', time: '3h', unread: false },
+  { kind: 'info', from: 'Notion', text: 'You were mentioned in Q2 OKRs', time: 'Yesterday', unread: false }
 ];
 
 
@@ -265,11 +270,11 @@ function openSignOutModal() {
 }
 
 const USER_MENU = [
-  { label: 'Profile',            action: () => { window.location.href = window.ROUTES.profile; } },
-  { label: 'Account settings',   action: () => { window.location.href = window.ROUTES.settings; } },
+  { label: 'Profile', action: () => { window.location.href = window.ROUTES.profile; } },
+  { label: 'Account settings', action: () => { window.location.href = window.ROUTES.settings; } },
   '-',
-  { label: 'Help & support',     action: () => { window.location.href = window.ROUTES.faq; } },
-  { label: 'Sign out',           action: openSignOutModal }
+  { label: 'Help & support', action: () => { window.location.href = window.ROUTES.faq; } },
+  { label: 'Sign out', action: openSignOutModal }
 ];
 
 function buildNotificationsPanel() {
@@ -287,8 +292,8 @@ function buildNotificationsPanel() {
         <button type="button" class="panel-row${n.unread ? ' unread' : ''}" data-i="${i}">
           <span class="panel-icon panel-icon-${n.kind}" aria-hidden="true">
             ${n.kind === 'alert' ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1l7 13H1L8 1z"/><path d="M8 6v4"/><circle cx="8" cy="12" r="0.5"/></svg>'
-    : n.kind === 'task' ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8l3 3 7-7"/></svg>'
-      : '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>'}
+      : n.kind === 'task' ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8l3 3 7-7"/></svg>'
+        : '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>'}
           </span>
           <span class="panel-body">
             <span class="panel-from">${n.from}</span>
@@ -314,8 +319,8 @@ function openNotificationDetail(n) {
       <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">
         <div style="width:36px;height:36px;border-radius:8px;background:var(--${n.kind === 'alert' ? 'red' : n.kind === 'task' ? 'green' : 'blue'}-lt);color:var(--${n.kind === 'alert' ? 'red' : n.kind === 'task' ? 'green' : 'blue'});display:flex;align-items:center;justify-content:center;flex-shrink:0">
           ${n.kind === 'alert' ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1l7 13H1L8 1z"/><path d="M8 6v4"/></svg>'
-    : n.kind === 'task' ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8l3 3 7-7"/></svg>'
-      : '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>'}
+        : n.kind === 'task' ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8l3 3 7-7"/></svg>'
+          : '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>'}
         </div>
         <div style="flex:1;min-width:0">
           <div style="font-size:13.5px;color:var(--text);line-height:1.5;margin-bottom:6px">${n.text}</div>
@@ -393,7 +398,7 @@ function bindTopbarPanels() {
  */
 export function mountShell() {
   const body = document.body;
-  if (body.dataset.shell !== 'admin') {return;}
+  if (body.dataset.shell !== 'admin') { return; }
 
   injectShellIfMissing();
   bindNavSubmenus();

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for
+from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for, session
 from flask_login import login_required
 from app.utils.decorators import role_required
 from app.services.user_service import UserRole
@@ -15,6 +15,7 @@ admin = Blueprint('admin', __name__, url_prefix='/admin')
 @login_required
 @role_required(UserRole.SUPER_ADMIN)
 def dashboard():
+    session['current_view'] = 'admin'
     stats = getAdminStats(db.session)
     form = InviteForm()
     return render_template('admin/dashboard.html', title='dashboard', stats=stats, form=form)

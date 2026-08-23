@@ -2,49 +2,45 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    {% if title %}
-    <title> {{title}} | GISync</title>
-    {% else %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  {% if title %}
+  <title> {{title}} | GISync</title>
+  {% else %}
 
-    <title>GISync</title>
-    {% endif %}
+  <title>GISync</title>
+  {% endif %}
 
-    
+  {{ vite.jsAsset }}
+  {{ vite.cssAsset }}
 
-    
-    {% if current_user.role.value == 'student' %}
-        {{ vite.cssAsset }}
-    {% else %}
-        {{ vite.jsAsset }}
-        {{ vite.cssAsset }}
-        
-    {% endif %}
-    
-    <script>
-        window.ROUTES = {
-            dashboard: "{{ url_for('admin.dashboard') }}",
-            userManagement: "{{ url_for('admin.userManagement') }}",
-            profile: "{{ url_for('main.profile') }}",
-            settings: "{{ url_for('main.settings') }}",
-            faq: "{{ url_for('main.faq') }}",
-            calendar: "{{ url_for('main.calendar') }}",
-            workflow: "{{ url_for('admin.workflow') }}",
-            notifications: "{{ url_for('main.notifications') }}",
-            fileManagement: "{{ url_for('admin.fileManagement') }}",
-            logout: "{{ url_for('auth.logout') }}"
-        }
 
-        window.USER = {
-            username: '{{ current_user.username }}',
-            role: '{{ current_user.role.value }}'
-        }
-    </script>
+
+  <script>
+    window.ROUTES = {
+      dashboard: "{{ url_for('admin.dashboard') }}",
+      userManagement: "{{ url_for('admin.userManagement') }}",
+      profile: "{{ url_for('main.profile') }}",
+      settings: "{{ url_for('main.settings') }}",
+      faq: "{{ url_for('main.faq') }}",
+      calendar: "{{ url_for('main.calendar') }}",
+      workflow: "{{ url_for('admin.workflow') }}",
+      notifications: "{{ url_for('main.notifications') }}",
+      fileManagement: "{{ url_for('admin.fileManagement') }}",
+      logout: "{{ url_for('auth.logout') }}"
+    }
+
+    window.USER = {
+      username: '{{ current_user.username }}',
+      role: '{{ current_user.role.value }}'
+    }
+
+    window.VIEW = { currentView: '{{ current_view }}' }
+  </script>
 
 </head>
 
@@ -311,208 +307,216 @@
     display: none;
   }
 </style>
+
 <body data-shell="admin" data-page="dashboard" data-breadcrumb="Home > Dashboard">
 
+  {% if current_view == 'student' %}
 
-    {% block content %}
+  {% include 'partials/student_nav.html' %}
 
-    {% endblock %}
-
-
+  {% endif %}
 
 
-    <script>
+  {% block content %}
 
-        //modal
-        const inviteModal = document.getElementById("inviteModal");
-  
+  {% endblock %}
 
-        document.getElementById("invite-btn").addEventListener("click", () => {
-            inviteModal.classList.add("show");
-        });
 
-        function closeInviteModal() {
-            inviteModal.classList.remove("show");
+
+
+  <script>
+
+
+    //modal
+    const inviteModal = document.getElementById("inviteModal");
+
+
+    document.getElementById("invite-btn").addEventListener("click", () => {
+      inviteModal.classList.add("show");
+    });
+
+    function closeInviteModal() {
+      inviteModal.classList.remove("show");
+    }
+
+    document.getElementById("closeInviteBtn")
+      .addEventListener("click", closeInviteModal);
+
+    document.getElementById("cancelInviteBtn")
+      .addEventListener("click", closeInviteModal);
+
+    inviteModal.addEventListener("click", (e) => {
+      if (e.target === inviteModal) {
+        closeInviteModal();
+      }
+    });
+
+    function closeModal() {
+      modal.classList.remove("show");
+    }
+
+    //invite modal
+    const form = document.getElementById('invite-form')
+    form.addEventListener('submit', async (e) => {
+
+      e.preventDefault();
+
+      const inviteForm = new FormData(form);
+
+      closeInviteModal();
+      inviteStudents(inviteForm);
+
+    });
+
+    let table = document.querySelector('.table');
+    let skeletonLoader = document.querySelector('.skeleton');
+    const importResult = document.getElementById('importResult');
+
+    (function () {
+      if (!table || !skeletonLoader) {
+        table = document.querySelector('.mock-table');
+        skeletonLoader = document.querySelector('.mock-skeleton')
+      };
+    })();
+
+    function showImportResult(type, message, errors = []) {
+      importResult.className = `import-result ${type}`;
+
+      importResult.innerHTML = `
+  <strong>${message}</strong>
+  ${errors.length
+          ? `
+              <ul>
+                  ${errors.map(error => `<li>${error}</li>`).join('')}
+              </ul>
+              `
+          : ''
         }
-
-        document.getElementById("closeInviteBtn")
-            .addEventListener("click", closeInviteModal);
-
-        document.getElementById("cancelInviteBtn")
-            .addEventListener("click", closeInviteModal);
-
-        inviteModal.addEventListener("click", (e) => {
-            if (e.target === inviteModal) {
-                closeInviteModal();
-            }
-        });
-
-        function closeModal() {
-            modal.classList.remove("show");
-        }
-
-        //invite modal
-        const form = document.getElementById('invite-form')
-        form.addEventListener('submit', async (e) => {
-
-            e.preventDefault();
-
-            const inviteForm = new FormData(form);
-
-            closeInviteModal();
-            inviteStudents(inviteForm);
-
-        });
-
-        let table = document.querySelector('.table');
-        let skeletonLoader = document.querySelector('.skeleton');
-        const importResult = document.getElementById('importResult');
-
-        (function() {
-            if (!table || !skeletonLoader) {
-                table = document.querySelector('.mock-table');
-                skeletonLoader = document.querySelector('.mock-skeleton')
-            };
-        })();
-
-        function showImportResult(type, message, errors = []) {
-            importResult.className = `import-result ${type}`;
-
-            importResult.innerHTML = `
-    <strong>${message}</strong>
-    ${errors.length
-                    ? `
-                <ul>
-                    ${errors.map(error => `<li>${error}</li>`).join('')}
-                </ul>
-                `
-                    : ''
-                }
 `;
 
-            importResult.classList.remove('hidden');
+      importResult.classList.remove('hidden');
 
-            importResult.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
+      importResult.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
 
-        function importStudents(formData) {
+    function importStudents(formData) {
 
-            // Reset previous messages
-            importResult.classList.add('hidden');
-            importResult.innerHTML = '';
+      // Reset previous messages
+      importResult.classList.add('hidden');
+      importResult.innerHTML = '';
 
-            // Show skeleton
-            table.style.display = 'none';
-            skeletonLoader.classList.remove('hidden');
+      // Show skeleton
+      table.style.display = 'none';
+      skeletonLoader.classList.remove('hidden');
 
-            fetch('/admin/resources/import', {
-                method: 'POST',
-                body: formData
-            })
-                .then(async (res) => {
-                    const data = await res.json();
+      fetch('/admin/resources/import', {
+        method: 'POST',
+        body: formData
+      })
+        .then(async (res) => {
+          const data = await res.json();
 
-                    if (!res.ok) {
-                        showImportResult(
-                            'error',
-                            'Import failed',
-                            Array.isArray(data.error)
-                                ? data.error
-                                : [data.error || 'An unknown error occurred']
-                        );
+          if (!res.ok) {
+            showImportResult(
+              'error',
+              'Import failed',
+              Array.isArray(data.error)
+                ? data.error
+                : [data.error || 'An unknown error occurred']
+            );
 
-                        return;
-                    }
+            return;
+          }
 
-                    showImportResult(
-                        'success',
-                        data.message || 'Import completed successfully',
-                        data.errors || []
-                    );
+          showImportResult(
+            'success',
+            data.message || 'Import completed successfully',
+            data.errors || []
+          );
 
 
-                })
-                .catch((err) => {
-                    showImportResult(
-                        'error',
-                        'Import failed',
-                        [err.message]
-                    );
-                })
-                .finally(() => {
-                    skeletonLoader.classList.add('hidden');
-                    table.style.display = 'table';
-                });
-        }
+        })
+        .catch((err) => {
+          showImportResult(
+            'error',
+            'Import failed',
+            [err.message]
+          );
+        })
+        .finally(() => {
+          skeletonLoader.classList.add('hidden');
+          table.style.display = 'table';
+        });
+    }
 
-        function inviteStudents(inviteForm) {
+    function inviteStudents(inviteForm) {
 
-            // Reset previous messages
-            importResult.classList.add('hidden');
-            importResult.innerHTML = '';
+      // Reset previous messages
+      importResult.classList.add('hidden');
+      importResult.innerHTML = '';
 
-            // Show skeleton
-            table.style.display = 'none';
-            skeletonLoader.classList.remove('hidden');
-            
+      // Show skeleton
+      table.style.display = 'none';
+      skeletonLoader.classList.remove('hidden');
 
-            fetch("{{ url_for('admin.inviteUser') }}", {
-                method: 'POST',
-                body: inviteForm,
-                credentials: 'include'
-            })
-                .then(async (res) => {
-                    const data = await res.json();
 
-                    if (!res.ok) {
+      fetch("{{ url_for('admin.inviteUser') }}", {
+        method: 'POST',
+        body: inviteForm,
+        credentials: 'include'
+      })
+        .then(async (res) => {
+          const data = await res.json();
 
-                        let errors = [];
+          if (!res.ok) {
 
-                        if (Array.isArray(data.error)) {
-                            errors = data.error;
-                        } else if (typeof data.error === "object" && data.error !== null) {
-                            errors = Object.entries(data.error).flatMap(
-                                ([field, msgs]) =>
-                                    msgs.map(msg => `${field}: ${msg}`)
-                            );
-                        } else {
-                            errors = [data.error || "An unknown error occurred"];
-                        }
-                        
-                        showImportResult(
-                            "error",
-                            "Invite could not be sent.\nPlease fix the following error/s and try again",
-                            errors
-                        );
-                        
+            let errors = [];
 
-                        return;
-                    }
+            if (Array.isArray(data.error)) {
+              errors = data.error;
+            } else if (typeof data.error === "object" && data.error !== null) {
+              errors = Object.entries(data.error).flatMap(
+                ([field, msgs]) =>
+                  msgs.map(msg => `${field}: ${msg}`)
+              );
+            } else {
+              errors = [data.error || "An unknown error occurred"];
+            }
 
-                    showImportResult(
-                        "success",
-                        data.message || "Invite completed successfully",
-                        data.errors || []
-                    );
-                })
-                .catch((err) => {
-                    showImportResult(
-                        "error",
-                        "Invite failed",
-                        [err.message]
-                    );
-                })
-                .finally(() => {
-                    skeletonLoader.classList.add("hidden");
-                    table.style.display = "table";
-                    
-                });
-        }
+            showImportResult(
+              "error",
+              "Invite could not be sent.\nPlease fix the following error/s and try again",
+              errors
+            );
 
-    </script>
+
+            return;
+          }
+
+          showImportResult(
+            "success",
+            data.message || "Invite completed successfully",
+            data.errors || []
+          );
+        })
+        .catch((err) => {
+          showImportResult(
+            "error",
+            "Invite failed",
+            [err.message]
+          );
+        })
+        .finally(() => {
+          skeletonLoader.classList.add("hidden");
+          table.style.display = "table";
+
+        });
+    }
+
+  </script>
 
 </body>
 

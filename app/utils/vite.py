@@ -13,15 +13,21 @@ class ViteAssets:
             / "manifest.json"
         )
 
-    def loadFile(self):
+    def loadMainFile(self):
         with open(self.manifest_path, "r") as file:
             manifest = json.load(file)
 
         return manifest.get("src/main-v4.js", {})
 
+    def loadCalendar(self):
+        with open(self.manifest_path, "r") as file:
+            manifest = json.load(file)
+
+        return manifest.get("src/calendar.js", {})
+
     @property
     def cssAsset(self):
-        entry = self.loadFile()
+        entry = self.loadMainFile()
 
         for css_file in entry.get("css", []):
             css_url = url_for(
@@ -35,7 +41,8 @@ class ViteAssets:
 
     @property
     def jsAsset(self):
-        entry = self.loadFile()
+
+        entry = self.loadMainFile()
 
         js_file = entry.get("file")
 
@@ -50,3 +57,42 @@ class ViteAssets:
         return Markup(
             f"<script type='module' src='{js_url}'></script>"
         )
+
+    @property
+    def calendarJs(self):
+        entry = self.loadCalendar()
+
+        calendar_file = entry.get("file")
+
+        if not calendar_file:
+            return Markup("")
+
+        js_url = url_for(
+            "static",
+            filename=f"dist/{calendar_file}"
+        )
+
+        return Markup(
+            f"<script type='module' src='{js_url}'></script>"
+        )
+
+
+    @property
+    def fileManagerJs(self):
+        entry = self.loadMainFile()
+
+        file_manager = entry.get("file")
+
+        if not file_manager:
+            return Markup("")
+
+        js_url = url_for(
+            "static",
+            filename=f"dist/{file_manager}"
+        )
+
+        return Markup(
+            f"<script type='module' src='{js_url}'></script>"
+        )
+
+        

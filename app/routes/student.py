@@ -1,17 +1,24 @@
-from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for
+from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for, session
 from flask_login import login_required
 
 
 student = Blueprint('student', __name__)
 
+
 @student.route('/dashboard')
 @login_required
 def dashboard():
+    session['current_view'] = 'student'
     return render_template('student/student_dashboard.html', title='dashboard')
 
 @student.route('/test')
 @login_required
 def tests():
+    pass
+
+@student.route('/classroom')
+@login_required
+def classroom():
     pass
 
 @student.route('/timetable')

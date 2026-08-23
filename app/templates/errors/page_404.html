@@ -12,13 +12,24 @@
       Try heading back to the dashboard or use the search to find what you need.
     </div>
     <div class="error-actions">
+      {% if current_user.role.value == 'student' %}
+      <a href="{{ url_for('student.dashboard') }}" class="btn btn-primary">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M8 2L2 7v7h12V7L8 2z" />
+          <path d="M6 14V9h4v5" />
+        </svg>
+        Back to home page
+      </a>
+      {% else %}
+
       <a href="{{ url_for('admin.dashboard') }}" class="btn btn-primary">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
           <path d="M8 2L2 7v7h12V7L8 2z" />
           <path d="M6 14V9h4v5" />
         </svg>
-        Back to dashboard
+        Back to home page
       </a>
+      {% endif %}
       <a href="javascript:history.back()" class="btn btn-outline">← Go back</a>
     </div>
   </div>

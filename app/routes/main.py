@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for
+from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for, session
 from flask_login import login_required
 from app.utils.decorators import role_required
 from app.services.user_service import UserRole
@@ -7,7 +7,9 @@ from app.forms.general.invite_user import InviteForm
 
 main = Blueprint('main', __name__)
 
-# all users routes relocate
+
+
+
 @main.route('/profile')
 @login_required
 def profile():
@@ -36,5 +38,10 @@ def notifications():
 @login_required
 def calendar():
     return render_template('main/calendar.html', title='calendar')
+
+@main.route('/OnCampus')
+@login_required
+def on_campus():
+    return render_template('student/coming_soon.html', title='coming-soon')
 
 

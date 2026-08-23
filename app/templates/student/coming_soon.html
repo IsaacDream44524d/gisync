@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coming soon | Gentelella 2026 v4</title>
+  <link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  {{ vite.jsAsset }}
+  {{ vite.cssAsset }}
+</head>
+
+<style>
+  .error-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: var(--body-bg);
+    text-align: center;
+  }
+
+  .error-content {
+    max-width: 500px;
+  }
+
+  .error-code {
+    font-size: 96px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -3px;
+    background: linear-gradient(135deg, var(--primary), var(--azure));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 8px;
+  }
+
+  .error-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .error-message {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .error-actions {
+    display: flex;
+    gap: var(--space-2);
+    justify-content: center;
+  }
+</style>
+
+<body>
+
+  <div class="error-page">
+    <div class="error-content" style="max-width:560px">
+      <div class="status-page-icon">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 6v6l4 2" />
+        </svg>
+      </div>
+      <div class="error-title">Coming soon</div>
+      <div class="error-message">
+        Discover your campus from a whole new perspective. Find buildings, lecture rooms,
+        facilities, services and important places all through an interactive campus map.
+      </div>
+
+    </div>
+  </div>
+
+
+</body>
+
+</html>

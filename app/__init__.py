@@ -1,9 +1,11 @@
-from flask import Flask, url_for, redirect
+from flask import Flask, url_for, redirect, session
 from app.config import Config
 from app.utils.vite import ViteAssets
 from app.extensions import migrate, db, login_manager, bcrypt, cache
 from dotenv import load_dotenv
 from app.utils.handers import errors
+from flask_login import current_user
+from app.services.user_service import UserRole
 
 
 load_dotenv()
@@ -40,6 +42,23 @@ def create_app():
     cache.init_app(app)
 
     migrate.init_app(app, db)
+
+    @app.context_processor
+    def inject_current_view():
+        if current_user.is_authenticated:
+            # all user with student role get default student view
+            if current_user.role == UserRole.STUDENT:
+                current_view = 'student'
+
+            # admin can get current view from session if does not exist set admin as view
+            else:
+                current_view = session.get('current_view', 'admin')
+
+        # if no view value exists set current view to none
+        else:
+            current_view = None
+
+        return {'current_view': current_view}
 
     with app.app_context():
         app.jinja_env.globals["vite"] = ViteAssets()
