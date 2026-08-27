@@ -8,69 +8,102 @@ import { openMenu } from './menus.js';
 
 // Folder tree (children form a hierarchy via path)
 const TREE = [
-  { id: 'root',      name: 'My Drive',  parent: null,    icon: 'drive' },
-  { id: 'projects',  name: 'Projects',  parent: 'root',  icon: 'folder' },
-  { id: 'design',    name: 'Design',    parent: 'projects', icon: 'folder' },
-  { id: 'eng',       name: 'Engineering', parent: 'projects', icon: 'folder' },
-  { id: 'marketing', name: 'Marketing', parent: 'root',  icon: 'folder' },
-  { id: 'shared',    name: 'Shared with me', parent: null, icon: 'shared' },
-  { id: 'starred',   name: 'Starred',   parent: null,    icon: 'starred' },
-  { id: 'trash',     name: 'Trash',     parent: null,    icon: 'trash' }
+  { id: 'root', name: 'Class Drive', parent: null, icon: 'drive' },
+  { id: 'modules', name: 'Modules', parent: 'root', icon: 'folder' },
+  { id: 'dsal', name: 'DSAL-1202', parent: 'modules', icon: 'folder' },
+  { id: 'gnss', name: 'GNSS-1202', parent: 'modules', icon: 'folder' },
+  { id: 'obop', name: 'OBOP-1202', parent: 'modules', icon: 'folder' },
+  { id: 'prgi', name: 'PRGI-1202', parent: 'modules', icon: 'folder' },
+  { id: 'prss', name: 'PRSS-1202', parent: 'modules', icon: 'folder' },
+  { id: 'math', name: 'MATH-1202', parent: 'modules', icon: 'folder' },
+  { id: 'timetables', name: 'Timetables', parent: 'root', icon: 'folder' },
+  { id: 'assignments', name: 'Assignments', parent: 'root', icon: 'folder' }
 ];
 
 const ICON = {
-  drive:   '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 6l4-4h4l4 4v8H2V6z"/></svg>',
-  folder:  '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4a1 1 0 011-1h3l2 2h5a1 1 0 011 1v6a1 1 0 01-1 1H3a1 1 0 01-1-1V4z"/></svg>',
-  shared:  '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="2.5"/><circle cx="11" cy="6" r="2"/><path d="M1 14a5 5 0 0110 0M11 9a4 4 0 014 5"/></svg>',
+  drive: '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 6l4-4h4l4 4v8H2V6z"/></svg>',
+  folder: '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4a1 1 0 011-1h3l2 2h5a1 1 0 011 1v6a1 1 0 01-1 1H3a1 1 0 01-1-1V4z"/></svg>',
+  shared: '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="2.5"/><circle cx="11" cy="6" r="2"/><path d="M1 14a5 5 0 0110 0M11 9a4 4 0 014 5"/></svg>',
   starred: '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1l2 5 5 .5-4 3.5 1 5-4-2.5-4 2.5 1-5-4-3.5 5-.5z"/></svg>',
-  trash:   '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4h10M6 4V2h4v2M5 4l1 9h4l1-9"/></svg>'
+  trash: '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4h10M6 4V2h4v2M5 4l1 9h4l1-9"/></svg>'
 };
 
 const FILE_TYPES = {
-  pdf:   { color: 'var(--red)',     bg: 'var(--red-lt)' },
-  doc:   { color: 'var(--blue)',    bg: 'var(--blue-lt)' },
-  xls:   { color: 'var(--green)',   bg: 'var(--green-lt)' },
-  fig:   { color: 'var(--purple)',  bg: 'var(--purple-lt)' },
-  img:   { color: 'var(--yellow)',  bg: 'var(--yellow-lt)' },
-  zip:   { color: 'var(--text-secondary)', bg: 'var(--bg-surface-secondary)' },
-  video: { color: 'var(--azure)',   bg: 'var(--azure-lt)' },
-  code:  { color: 'var(--cyan)',    bg: 'var(--cyan-lt)' }
+  pdf: { color: 'var(--red)', bg: 'var(--red-lt)' },
+  doc: { color: 'var(--blue)', bg: 'var(--blue-lt)' },
+  xls: { color: 'var(--green)', bg: 'var(--green-lt)' },
+  fig: { color: 'var(--purple)', bg: 'var(--purple-lt)' },
+  img: { color: 'var(--yellow)', bg: 'var(--yellow-lt)' },
+  zip: { color: 'var(--text-secondary)', bg: 'var(--bg-surface-secondary)' },
+  video: { color: 'var(--azure)', bg: 'var(--azure-lt)' },
+  code: { color: 'var(--cyan)', bg: 'var(--cyan-lt)' }
 };
 
 // Files (folder = type 'folder') by parent id
 let nextId = 1;
 const FILES = [
   // root
-  { id: nextId++, parent: 'root', type: 'folder', name: 'Projects',  modified: 'Apr 28, 2026', size: '—',     starred: false },
-  { id: nextId++, parent: 'root', type: 'folder', name: 'Marketing', modified: 'Apr 27, 2026', size: '—',     starred: false },
-  { id: nextId++, parent: 'root', type: 'pdf',    name: 'Q2 Plan.pdf',           modified: 'Apr 28, 2026', size: '2.4 MB', starred: true },
-  { id: nextId++, parent: 'root', type: 'doc',    name: 'Onboarding Guide.docx', modified: 'Apr 26, 2026', size: '156 KB', starred: false },
-  { id: nextId++, parent: 'root', type: 'xls',    name: 'Q1 Metrics.xlsx',        modified: 'Apr 22, 2026', size: '892 KB', starred: true },
-  { id: nextId++, parent: 'root', type: 'img',    name: 'team-photo.jpg',         modified: 'Apr 18, 2026', size: '4.2 MB', starred: false },
-  // projects
-  { id: nextId++, parent: 'projects', type: 'folder', name: 'Design',      modified: 'Apr 28, 2026', size: '—', starred: false },
-  { id: nextId++, parent: 'projects', type: 'folder', name: 'Engineering', modified: 'Apr 28, 2026', size: '—', starred: false },
-  { id: nextId++, parent: 'projects', type: 'doc',    name: 'Sprint Plan.md',     modified: 'Apr 28, 2026', size: '12 KB',  starred: false },
-  // design
-  { id: nextId++, parent: 'design', type: 'fig',   name: 'Dashboard Mockups.fig', modified: 'Apr 28, 2026', size: '38 MB',  starred: true },
-  { id: nextId++, parent: 'design', type: 'fig',   name: 'Component Library.fig', modified: 'Apr 27, 2026', size: '24 MB',  starred: true },
-  { id: nextId++, parent: 'design', type: 'img',   name: 'logo-final.png',        modified: 'Apr 25, 2026', size: '420 KB', starred: false },
-  { id: nextId++, parent: 'design', type: 'img',   name: 'brand-guide.pdf',       modified: 'Apr 20, 2026', size: '3.1 MB', starred: false },
-  // engineering
-  { id: nextId++, parent: 'eng', type: 'code',  name: 'api-schema.json',       modified: 'Apr 28, 2026', size: '48 KB',  starred: false },
-  { id: nextId++, parent: 'eng', type: 'code',  name: 'deployment.yaml',       modified: 'Apr 28, 2026', size: '8 KB',   starred: false },
-  { id: nextId++, parent: 'eng', type: 'doc',   name: 'Architecture.md',       modified: 'Apr 26, 2026', size: '34 KB',  starred: false },
-  { id: nextId++, parent: 'eng', type: 'zip',   name: 'archive-q1.zip',        modified: 'Apr 12, 2026', size: '184 MB', starred: false },
-  // marketing
-  { id: nextId++, parent: 'marketing', type: 'video', name: 'Product Launch.mp4',   modified: 'Apr 27, 2026', size: '128 MB', starred: false },
-  { id: nextId++, parent: 'marketing', type: 'doc',   name: 'Press Release.docx',   modified: 'Apr 25, 2026', size: '89 KB',  starred: false },
-  { id: nextId++, parent: 'marketing', type: 'xls',   name: 'Campaign Budget.xlsx', modified: 'Apr 23, 2026', size: '124 KB', starred: false }
+  { id: nextId++, parent: 'root', type: 'folder', name: 'Modules', modified: 'Apr 28, 2026', size: '—', starred: false },
+  { id: nextId++, parent: 'root', type: 'folder', name: 'Timetables', modified: 'Apr 27, 2026', size: '—', starred: false },
+  { id: nextId++, name: 'Assignments', parent: 'root', type: 'folder', modified: 'Apr 27, 2026', size: '—' },
+
+  // modolues
+  { id: nextId++, name: 'DSAL-1202', parent: 'modules', type: 'folder', modified: 'Apr 28, 2026', size: '—'},
+  { id: nextId++, name: 'GNSS-1202', parent: 'modules', type: 'folder', modified: 'Apr 28, 2026', size: '—'},
+  { id: nextId++, name: 'OBOP-1202', parent: 'modules', type: 'folder', modified: 'Apr 28, 2026', size: '—'},
+  { id: nextId++, name: 'PRGI-1202', parent: 'modules', type: 'folder', modified: 'Apr 28, 2026', size: '—'},
+  { id: nextId++, name: 'PRSS-1202', parent: 'modules', type: 'folder', modified: 'Apr 28, 2026', size: '—'},
+  { id: nextId++, name: 'MATH-1202', parent: 'modules', type: 'folder', modified: 'Apr 28, 2026', size: '—'},
+
+  // DSAL
+  { id: nextId++, parent: 'dsal', type: 'pdf', name: 'Trees and graph.pdf', modified: 'Apr 28, 2026', size: '—', starred: false },
+  { id: nextId++, parent: 'dsal', type: 'pdf', name: 'Lecture Notes 7.pdf', modified: 'Apr 28, 2026', size: '—', starred: false },
+  { id: nextId++, parent: 'dsal', type: 'pdf', name: 'Lecture Notes 5.pdf', modified: 'Apr 28, 2026', size: '12 KB', starred: false },
+
+  // GNSS
+  { id: nextId++, parent: 'gnss', type: 'pdf', name: 'Control segment and user segment.pdf', modified: 'Apr 28, 2026', size: '38 MB', starred: false },
+  { id: nextId++, parent: 'gnss', type: 'pdf', name: 'Intro to GNSS.pdf', modified: 'Apr 27, 2026', size: '24 MB', starred: false },
+  { id: nextId++, parent: 'gnss', type: 'pdf', name: 'Different GNSS Sysytems.png', modified: 'Apr 25, 2026', size: '420 KB', starred: false },
+  { id: nextId++, parent: 'gnss', type: 'pdf', name: 'satellite signal modenisation.pdf', modified: 'Apr 20, 2026', size: '3.1 MB', starred: false },
+
+  // OOP
+  { id: nextId++, parent: 'obop', type: 'pdf', name: 'Access Modifiers.xlsx', modified: 'Apr 28, 2026', size: '48 KB', starred: false },
+  { id: nextId++, parent: 'obop', type: 'pdf', name: 'Arraylist Datatypes.xlsx', modified: 'Apr 28, 2026', size: '8 KB', starred: false },
+  { id: nextId++, parent: 'obop', type: 'pdf', name: 'Arrays.xlsx', modified: 'Apr 26, 2026', size: '34 KB', starred: false },
+  { id: nextId++, parent: 'obop', type: 'pdf', name: 'Java for absolute beginners.pdf', modified: 'Apr 12, 2026', size: '184 MB', starred: false },
+
+  // PRGI
+  { id: nextId++, parent: 'prgi', type: 'pdf', name: 'Intro to QGIS.pdf', modified: 'Apr 27, 2026', size: '128 MB', starred: false },
+  { id: nextId++, parent: 'prgi', type: 'pdf', name: 'Lecture 5 data types.pdf', modified: 'Apr 25, 2026', size: '89 KB', starred: false },
+  { id: nextId++, parent: 'prgi', type: 'pdf', name: 'GIS data models.pdf', modified: 'Apr 23, 2026', size: '124 KB', starred: false },
+  { id: nextId++, parent: 'prgi', type: 'pdf', name: 'GIS data sources.pdf', modified: 'Apr 23, 2026', size: '124 KB', starred: false },
+
+
+  // PRGI
+  { id: nextId++, parent: 'prss', type: 'pdf', name: 'Atmospheric window.pdf', modified: 'Apr 27, 2026', size: '128 MB', starred: false },
+  { id: nextId++, parent: 'prss', type: 'pdf', name: 'Radiation and the earth.pdf', modified: 'Apr 25, 2026', size: '89 KB', starred: false },
+  { id: nextId++, parent: 'prss', type: 'pdf', name: 'Platforms.pdf', modified: 'Apr 23, 2026', size: '124 KB', starred: false },
+  { id: nextId++, parent: 'prss', type: 'pdf', name: 'Sensors.pdf', modified: 'Apr 23, 2026', size: '124 KB', starred: false },
+
+  // Timetable
+  { id: nextId++, parent: 'timetables', type: 'pdf', name: 'Mid-semester exams.pdf', modified: 'Apr 27, 2026', size: '128 MB', starred: false },
+  { id: nextId++, parent: 'timetables', type: 'pdf', name: 'End-semester exams.pdf', modified: 'Apr 25, 2026', size: '89 KB', starred: false },
+  { id: nextId++, parent: 'timetables', type: 'pdf', name: 'Weekly class timetable.pdf', modified: 'Apr 23, 2026', size: '124 KB', starred: false },
+
+
+  // math
+  { id: nextId++, parent: 'math', type: 'pdf', name: 'Sequences and series.pdf', modified: 'Apr 27, 2026', size: '128 MB', starred: false },
+  { id: nextId++, parent: 'math', type: 'pdf', name: 'Power series.pdf', modified: 'Apr 25, 2026', size: '89 KB', starred: false },
+  { id: nextId++, parent: 'math', type: 'pdf', name: 'Parametric equations and polar coordinates.pdf', modified: 'Apr 23, 2026', size: '124 KB', starred: false },
+
+  // assignments
+  { id: nextId++, parent: 'assignments', type: 'pdf', name: 'ALDS-1201 assignment 1.pdf', modified: 'Apr 23, 2026', size: '124 KB', starred: false }
 ];
 
 let currentId = 'root';
 let viewMode = 'grid'; // or 'list'
 
-function escapeHtml(s) { return String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
 function getNode(id) { return TREE.find((n) => n.id === id); }
 
@@ -83,9 +116,9 @@ function getStarredFiles() {
 }
 
 function getCurrentFiles() {
-  if (currentId === 'starred') {return getStarredFiles();}
-  if (currentId === 'shared')  {return FILES.filter((f) => f.parent === 'marketing');} // demo: marketing as shared
-  if (currentId === 'trash')   {return [];}
+  if (currentId === 'starred') { return getStarredFiles(); }
+  if (currentId === 'shared') { return FILES.filter((f) => f.parent === 'marketing'); } // demo: marketing as shared
+  if (currentId === 'trash') { return []; }
   return getChildren(currentId);
 }
 
@@ -100,7 +133,7 @@ function buildBreadcrumb() {
 }
 
 function fileExt(file) {
-  if (file.type === 'folder') {return '';}
+  if (file.type === 'folder') { return ''; }
   const dot = file.name.lastIndexOf('.');
   return dot > -1 ? file.name.slice(dot + 1).toUpperCase() : file.type.toUpperCase();
 }
@@ -118,8 +151,8 @@ function renderTree() {
           <span>${escapeHtml(n.name)}</span>
         </button>
         ${subs.length ? `<div class="tree-subs">${subs.map((s) => {
-    const subSubs = TREE.filter((cc) => cc.parent === s.id);
-    return `
+      const subSubs = TREE.filter((cc) => cc.parent === s.id);
+      return `
             <button type="button" class="tree-link tree-sub${s.id === currentId ? ' active' : ''}" data-id="${s.id}">
               ${ICON[s.icon] || ICON.folder}
               <span>${escapeHtml(s.name)}</span>
@@ -131,7 +164,7 @@ function renderTree() {
               </button>
             `).join('')}
           `;
-  }).join('')}</div>` : ''}
+    }).join('')}</div>` : ''}
       </div>
     `;
   }).join('');
@@ -163,17 +196,15 @@ function renderFiles() {
       <button type="button" class="fm-item${f.starred ? ' starred' : ''}" data-id="${f.id}" data-type="${f.type}">
         <div class="fm-item-icon" style="${isFolder ? '' : `background:${tcfg.bg};color:${tcfg.color}`}">
           ${isFolder
-    ? '<svg width="32" height="32" viewBox="0 0 32 32" fill="var(--primary-lt)" stroke="var(--primary)" stroke-width="1.2"><path d="M4 8a2 2 0 012-2h6l3 3h11a2 2 0 012 2v13a2 2 0 01-2 2H6a2 2 0 01-2-2V8z"/></svg>'
-    : `<span class="ext">${fileExt(f)}</span>`}
+        ? '<svg width="32" height="32" viewBox="0 0 32 32" fill="var(--primary-lt)" stroke="var(--primary)" stroke-width="1.2"><path d="M4 8a2 2 0 012-2h6l3 3h11a2 2 0 012 2v13a2 2 0 01-2 2H6a2 2 0 01-2-2V8z"/></svg>'
+        : `<span class="ext">${fileExt(f)}</span>`}
         </div>
         <div class="fm-item-name">${escapeHtml(f.name)}</div>
         <div class="fm-item-meta">${f.size} · ${f.modified}</div>
-        <span class="fm-star${f.starred ? ' on' : ''}" data-star="${f.id}" aria-label="${f.starred ? 'Unstar' : 'Star'}">
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="${f.starred ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.5"><path d="M8 1l2 5 5 .5-4 3.5 1 5-4-2.5-4 2.5 1-5-4-3.5 5-.5z"/></svg>
-        </span>
         <button type="button" class="fm-item-menu" data-menu="${f.id}" aria-label="More options">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="3" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="8" cy="13" r="1.2"/></svg>
         </button>
+        
       </button>
     `;
   }).join('');
@@ -204,7 +235,7 @@ function deleteFile(id) {
 
 function renameFile(id) {
   const f = FILES.find((x) => x.id === id);
-  if (!f) {return;}
+  if (!f) { return; }
   showModal({
     title: 'Rename',
     body: `
@@ -217,14 +248,16 @@ function renameFile(id) {
     `,
     actions: [
       { label: 'Cancel', variant: 'outline' },
-      { label: 'Save', variant: 'primary', action: ({ body }) => {
-        const name = body.querySelector('input').value.trim();
-        if (!name) { showToast('Name is required', { variant: 'warning' }); return false; }
-        f.name = name;
-        renderFiles();
-        showToast(`Renamed to ${name}`, { variant: 'success' });
-        return true;
-      } }
+      {
+        label: 'Save', variant: 'primary', action: ({ body }) => {
+          const name = body.querySelector('input').value.trim();
+          if (!name) { showToast('Name is required', { variant: 'warning' }); return false; }
+          f.name = name;
+          renderFiles();
+          showToast(`Renamed to ${name}`, { variant: 'success' });
+          return true;
+        }
+      }
     ]
   });
 }
@@ -242,12 +275,14 @@ function uploadDialog() {
     `,
     actions: [
       { label: 'Cancel', variant: 'outline' },
-      { label: 'Upload demo file', variant: 'primary', action: () => {
-        FILES.push({ id: nextId++, parent: currentId, type: 'pdf', name: `New upload ${Date.now()}.pdf`, modified: 'just now', size: '1.2 MB', starred: false });
-        renderFiles();
-        showToast('File uploaded', { variant: 'success' });
-        return true;
-      } }
+      {
+        label: 'Upload demo file', variant: 'primary', action: () => {
+          FILES.push({ id: nextId++, parent: currentId, type: 'pdf', name: `New upload ${Date.now()}.pdf`, modified: 'just now', size: '1.2 MB', starred: false });
+          renderFiles();
+          showToast('File uploaded', { variant: 'success' });
+          return true;
+        }
+      }
     ]
   });
 }
@@ -256,14 +291,14 @@ function uploadDialog() {
 
 export function initFileManager() {
   const host = document.querySelector('.file-manager');
-  if (!host) {return;}
+  if (!host) { return; }
 
   renderAll();
 
   // Tree clicks
   document.getElementById('fm-tree').addEventListener('click', (e) => {
     const link = e.target.closest('.tree-link');
-    if (!link) {return;}
+    if (!link) { return; }
     e.stopPropagation();
     navigateTo(link.dataset.id);
   });
@@ -271,7 +306,7 @@ export function initFileManager() {
   // Breadcrumb clicks
   document.getElementById('fm-breadcrumb').addEventListener('click', (e) => {
     const link = e.target.closest('.bc-link');
-    if (!link) {return;}
+    if (!link) { return; }
     e.stopPropagation();
     navigateTo(link.dataset.id);
   });
@@ -292,36 +327,36 @@ export function initFileManager() {
       e.preventDefault();
       const id = parseInt(menu.dataset.menu, 10);
       const f = FILES.find((x) => x.id === id);
-      if (!f) {return;}
+      if (!f) { return; }
       const items = f.type === 'folder' ? [
-        { label: 'Open',     action: () => navigateTo(getNode(f.name.toLowerCase())?.id || currentId) },
-        { label: 'Rename',   action: () => renameFile(id) },
+        { label: 'Open', action: () => navigateTo(getNode(f.name.toLowerCase())?.id || currentId) },
+        { label: 'Rename', action: () => renameFile(id) },
         '-',
-        { label: 'Delete',   action: () => deleteFile(id) }
+        { label: 'Delete', action: () => deleteFile(id) }
       ] : [
         { label: 'Download', action: () => showToast(`Downloading: ${f.name}`) },
-        { label: 'Share',    action: () => showToast(`Share link copied: ${f.name}`, { variant: 'success' }) },
-        { label: 'Rename',   action: () => renameFile(id) },
+        { label: 'Share', action: () => showToast(`Share link copied: ${f.name}`, { variant: 'success' }) },
+        { label: 'Rename', action: () => renameFile(id) },
         { label: f.starred ? 'Unstar' : 'Star', action: () => { f.starred = !f.starred; renderFiles(); } },
         '-',
-        { label: 'Delete',   action: () => deleteFile(id) }
+        { label: 'Delete', action: () => deleteFile(id) }
       ];
       openMenu(menu, items);
       return;
     }
     const item = e.target.closest('.fm-item');
-    if (!item) {return;}
+    if (!item) { return; }
     if (item.dataset.type === 'folder') {
       // Look up folder node by name in current children
       const f = FILES.find((x) => x.id === parseInt(item.dataset.id, 10));
-      if (!f) {return;}
+      if (!f) { return; }
       // Find tree node matching this folder name + parent
       const node = TREE.find((n) => n.parent === f.parent && n.name === f.name)
-                || TREE.find((n) => n.name === f.name);
-      if (node) {navigateTo(node.id);}
+        || TREE.find((n) => n.name === f.name);
+      if (node) { navigateTo(node.id); }
     } else {
       const f = FILES.find((x) => x.id === parseInt(item.dataset.id, 10));
-      if (f) {showToast(`Preview: ${f.name}`);}
+      if (f) { showToast(`Preview: ${f.name}`); }
     }
   });
 
@@ -349,14 +384,16 @@ export function initFileManager() {
       body: '<form class="modal-form" novalidate><div class="modal-form-row"><label for="nf-name">Folder name</label><input type="text" id="nf-name" name="name" placeholder="My folder" required autofocus></div></form>',
       actions: [
         { label: 'Cancel', variant: 'outline' },
-        { label: 'Create', variant: 'primary', action: ({ body }) => {
-          const name = body.querySelector('input').value.trim();
-          if (!name) { showToast('Folder name is required', { variant: 'warning' }); return false; }
-          FILES.push({ id: nextId++, parent: currentId, type: 'folder', name, modified: 'just now', size: '—', starred: false });
-          renderFiles();
-          showToast(`Folder created: ${name}`, { variant: 'success' });
-          return true;
-        } }
+        {
+          label: 'Create', variant: 'primary', action: ({ body }) => {
+            const name = body.querySelector('input').value.trim();
+            if (!name) { showToast('Folder name is required', { variant: 'warning' }); return false; }
+            FILES.push({ id: nextId++, parent: currentId, type: 'folder', name, modified: 'just now', size: '—', starred: false });
+            renderFiles();
+            showToast(`Folder created: ${name}`, { variant: 'success' });
+            return true;
+          }
+        }
       ]
     });
   });

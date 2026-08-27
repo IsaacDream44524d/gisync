@@ -9,6 +9,9 @@ import { openMenu, DEFAULT_CARD_MENU } from './v4/menus.js';
 import { initCommandPalette } from './v4/command-palette.js';
 import { initPageActions } from './v4/page-actions.js';
 
+import('/src/v4/file-manager.js').then(({ initFileManager }) => initFileManager());
+
+
 mountShell();
 initCharts();
 initTables();
@@ -42,7 +45,7 @@ if (document.querySelector('.settings-content')) {
 // Toggle switches
 document.addEventListener('click', (e) => {
   const toggle = e.target.closest('.toggle');
-  if (toggle) {toggle.classList.toggle('on');}
+  if (toggle) { toggle.classList.toggle('on'); }
 });
 
 // Todo checkboxes — toggle .done on the cb + row, then refresh any
@@ -50,15 +53,15 @@ document.addEventListener('click', (e) => {
 // remaining" subtitle stays in sync with the actual checkboxes.
 document.addEventListener('click', (e) => {
   const cb = e.target.closest('.todo-cb');
-  if (!cb) {return;}
+  if (!cb) { return; }
   cb.classList.toggle('done');
   const row = cb.closest('.todo-row');
-  if (row) {row.classList.toggle('done');}
+  if (row) { row.classList.toggle('done'); }
   // Update counter text within the same card.
   const card = cb.closest('.card');
-  if (!card) {return;}
+  if (!card) { return; }
   const counter = card.querySelector('[data-todo-counter]');
-  if (!counter) {return;}
+  if (!counter) { return; }
   const all = card.querySelectorAll('.todo-row');
   const done = card.querySelectorAll('.todo-row.done');
   const remaining = all.length - done.length;
@@ -71,7 +74,7 @@ document.addEventListener('click', (e) => {
 // tab and removes it from siblings in the same parent.
 document.addEventListener('click', (e) => {
   const tab = e.target.closest('.chart-tab');
-  if (!tab) {return;}
+  if (!tab) { return; }
   tab.parentElement.querySelectorAll('.chart-tab').forEach((t) => t.classList.remove('active'));
   tab.classList.add('active');
 });
@@ -81,7 +84,7 @@ document.addEventListener('click', (e) => {
 // Opt-in via data-group so plain action button groups are unaffected.
 document.addEventListener('click', (e) => {
   const btn = e.target.closest('.btn-group[data-group] > .btn');
-  if (!btn) {return;}
+  if (!btn) { return; }
   btn.parentElement.querySelectorAll('.btn').forEach((b) => {
     b.classList.remove('active');
     b.setAttribute('aria-pressed', 'false');
@@ -96,9 +99,9 @@ document.addEventListener('click', (e) => {
 // so they never reach this handler.
 document.addEventListener('click', (e) => {
   const btn = e.target.closest('.card-opt-btn');
-  if (!btn) {return;}
+  if (!btn) { return; }
   // Skip if the click was already handled (e.g. calendar prev/next).
-  if (e.defaultPrevented) {return;}
+  if (e.defaultPrevented) { return; }
   e.preventDefault();
   openMenu(btn, DEFAULT_CARD_MENU);
 });
@@ -117,21 +120,21 @@ document.addEventListener('click', (e) => {
     return;
   }
   const chip = e.target.closest('.chip');
-  if (chip) {chip.classList.toggle('active');}
+  if (chip) { chip.classList.toggle('active'); }
 });
 
 // Form submit — let HTML5 validation run, then fake-submit on valid forms.
 // Lazy-imports the toast helper so the dependency stays out of the entry chunk.
 document.addEventListener('submit', (e) => {
   const form = e.target;
-  if (!(form instanceof HTMLFormElement)) {return;}
+  if (!(form instanceof HTMLFormElement)) { return; }
   // Native :invalid forms still get the browser's validation UI before we
   // see the submit event, so reaching here means the form is already valid.
   e.preventDefault();
   const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
   const label = (submitBtn?.textContent || submitBtn?.value || 'Saved').trim();
   import('./v4/toast.js').then(({ showToast }) => showToast(`${label} ✓`, { variant: 'success' }));
-  if (form.dataset.resetOnSubmit !== 'false') {form.reset();}
+  if (form.dataset.resetOnSubmit !== 'false') { form.reset(); }
 });
 
 // Topbar search box opens the command palette — wired by initCommandPalette.

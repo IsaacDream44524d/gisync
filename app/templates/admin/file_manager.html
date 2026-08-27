@@ -14,13 +14,6 @@
             <h1 class="page-title">Files</h1>
           </div>
           <div class="page-actions">
-            <button class="btn btn-outline" id="new-folder-btn">
-              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M2 4a1 1 0 011-1h3l2 2h5a1 1 0 011 1v6a1 1 0 01-1 1H3a1 1 0 01-1-1V4z" />
-                <path d="M8 7v4M6 9h4" />
-              </svg>
-              New folder
-            </button>
             <button class="btn btn-primary" id="upload-btn">
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
                 <path d="M14 11v3H2v-3" />
@@ -36,6 +29,7 @@
       <div class="card file-manager">
         <div class="fm-layout">
           <!-- Tree sidebar -->
+           <!-- display for admin only -->
           <aside class="fm-tree-wrap">
             <div id="fm-tree" class="fm-tree"></div>
 
@@ -45,8 +39,6 @@
                 <div style="width:62%;background:var(--primary)"></div>
               </div>
               <div class="fm-storage-meta">6.2 GB of 10 GB used</div>
-              <button class="btn btn-outline btn-sm" style="width:100%;justify-content:center;margin-top:8px">Upgrade
-                plan</button>
             </div>
           </aside>
 
@@ -98,9 +90,6 @@
     </div>
   </main>
 
-  <script type="module">
-    import('/src/v4/file-manager.js').then(({ initFileManager }) => initFileManager());
-  </script>
 
 
 {% endblock %}
