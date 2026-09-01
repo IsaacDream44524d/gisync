@@ -1,0 +1,731 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    /* ================================
+   Groups Modal
+================================ */
+
+    .groups-modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+
+        display: none;
+        align-items: center;
+        justify-content: center;
+
+        padding: 20px;
+
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(4px);
+
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    .groups-modal-overlay.active {
+        display: flex;
+        opacity: 1;
+    }
+
+
+    /* Modal */
+
+    .groups-modal {
+        width: 100%;
+        max-width: 520px;
+
+        background: var(--card-bg, #fff);
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 16px;
+
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+
+        overflow: hidden;
+
+        transform: translateY(10px) scale(0.98);
+        transition: transform 0.2s ease;
+    }
+
+    .groups-modal-overlay.active .groups-modal {
+        transform: translateY(0) scale(1);
+    }
+
+
+    /* Header */
+
+    .groups-modal-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+
+        padding: 20px 22px;
+
+        border-bottom: 1px solid var(--border-color, #e5e7eb);
+    }
+
+    .groups-modal-header h3 {
+        margin: 0;
+
+        font-size: 18px;
+        font-weight: 600;
+
+        color: var(--text-color, #1f2937);
+    }
+
+    .groups-modal-header p {
+        margin: 5px 0 0;
+
+        font-size: 13px;
+
+        color: var(--muted-color, #6b7280);
+    }
+
+
+    /* Close button */
+
+    .groups-close-btn {
+        width: 34px;
+        height: 34px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border: 0;
+        border-radius: 8px;
+
+        background: transparent;
+        color: var(--muted-color, #6b7280);
+
+        cursor: pointer;
+
+        transition: all 0.2s ease;
+    }
+
+    .groups-close-btn:hover {
+        background: var(--sidebar-hover, rgba(0, 0, 0, 0.05));
+        color: var(--text-color, #1f2937);
+    }
+
+
+    /* Body */
+
+    .groups-modal-body {
+        padding: 22px;
+    }
+
+
+    /* Label */
+
+    .groups-modal .reg-label {
+        display: block;
+
+        margin-bottom: 8px;
+
+        font-size: 14px;
+        font-weight: 500;
+
+        color: var(--text-color, #374151);
+    }
+
+
+    /* Input wrapper */
+
+    .groups-modal .reg-input-wrap {
+        position: relative;
+    }
+
+
+    /* Textarea */
+
+    .groups-modal .groups-textarea {
+        width: 100%;
+        min-height: 150px;
+
+        padding: 14px 14px 14px 44px;
+
+        resize: vertical;
+
+        box-sizing: border-box;
+
+        font-family: inherit;
+        font-size: 14px;
+        line-height: 1.6;
+
+        color: var(--text-color, #1f2937);
+        background: var(--input-bg, #fff);
+
+        border: 1px solid var(--border-color, #d1d5db);
+        border-radius: 10px;
+
+        outline: none;
+
+        transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .groups-modal .groups-textarea:focus {
+        border-color: var(--primary, #1abb9c);
+
+        box-shadow: 0 0 0 3px rgba(26, 187, 156, 0.10);
+    }
+
+
+    /* Icon */
+
+    .groups-modal .reg-input-icon {
+        position: absolute;
+
+        top: 16px;
+        left: 15px;
+
+        font-size: 17px;
+
+        color: var(--muted-color, #8a94a6);
+
+        pointer-events: none;
+    }
+
+
+    /* Help text */
+
+    .groups-help-text {
+        display: block;
+
+        margin-top: 7px;
+
+        font-size: 12px;
+
+        color: var(--muted-color, #6b7280);
+    }
+
+
+    /* Footer */
+
+    .groups-modal-footer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+
+        padding: 16px 22px;
+
+        border-top: 1px solid var(--border-color, #e5e7eb);
+    }
+
+
+    /* Buttons */
+
+    .groups-cancel-btn,
+    .groups-save-btn,
+    .groups-open-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+
+        min-height: 40px;
+
+        padding: 0 16px;
+
+        border-radius: 9px;
+
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 500;
+
+        cursor: pointer;
+
+        transition: all 0.2s ease;
+    }
+
+
+    /* Open button */
+
+    .groups-open-btn {
+        border: 1px solid var(--primary, #1abb9c);
+
+        background: var(--primary, #1abb9c);
+        color: #fff;
+    }
+
+    .groups-open-btn:hover {
+        opacity: 0.9;
+    }
+
+
+    /* Cancel */
+
+    .groups-cancel-btn {
+        border: 1px solid var(--border-color, #d1d5db);
+
+        background: transparent;
+        color: var(--text-color, #374151);
+    }
+
+    .groups-cancel-btn:hover {
+        background: var(--sidebar-hover, rgba(0, 0, 0, 0.04));
+    }
+
+
+    /* Save */
+
+    .groups-save-btn {
+        border: 1px solid var(--primary, #1abb9c);
+
+        background: var(--primary, #1abb9c);
+        color: #fff;
+    }
+
+    .groups-save-btn:hover {
+        opacity: 0.9;
+    }
+
+
+    /* ================================
+   Responsive
+================================ */
+
+    @media (max-width: 600px) {
+
+        .groups-modal-overlay {
+            padding: 12px;
+            align-items: flex-end;
+        }
+
+        .groups-modal {
+            max-width: none;
+
+            border-radius: 16px 16px 12px 12px;
+
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .groups-modal-header {
+            padding: 18px;
+        }
+
+        .groups-modal-body {
+            padding: 18px;
+        }
+
+        .groups-modal-footer {
+            padding: 14px 18px;
+
+            flex-direction: column-reverse;
+        }
+
+        .groups-cancel-btn,
+        .groups-save-btn {
+            width: 100%;
+        }
+
+        .groups-modal .groups-textarea {
+            min-height: 130px;
+        }
+    }
+
+
+    /* Very small screens */
+
+    @media (max-width: 360px) {
+
+        .groups-modal-header h3 {
+            font-size: 16px;
+        }
+
+        .groups-modal-header p {
+            font-size: 12px;
+        }
+
+        .groups-modal-body {
+            padding: 15px;
+        }
+
+        .groups-modal-footer {
+            padding: 12px 15px;
+        }
+    }
+
+    .group-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-card);
+
+        padding: var(--space-4);
+
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .group-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        margin-bottom: var(--space-4);
+    }
+
+    .group-name {
+        margin: 0;
+
+        font-size: 0.95rem;
+        font-weight: var(--font-weight-bold);
+        color: var(--text);
+    }
+
+    .group-count {
+        font-size: 0.75rem;
+        font-weight: var(--font-weight-medium);
+
+        color: var(--blue);
+    }
+
+    .group-members {
+        flex: 1;
+
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+    }
+
+    .member {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+    }
+
+    .member-avatar {
+        width: 32px;
+        height: 32px;
+
+        border-radius: 50%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        flex-shrink: 0;
+
+        font-size: 0.7rem;
+        font-weight: var(--font-weight-bold);
+
+        color: var(--text-secondary);
+        background: var(--primary-lt);
+    }
+
+    .member-details {
+        min-width: 0;
+    }
+
+    .member-name {
+        font-size: 0.8rem;
+        font-weight: var(--font-weight-medium);
+
+        color: var(--text);
+
+        line-height: 1.25;
+    }
+
+    .member-email {
+        font-size: 0.72rem;
+
+        color: var(--text-muted);
+
+        line-height: 1.25;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .group-footer {
+        margin-top: var(--space-4);
+    }
+
+    .group-action-btn {
+        width: 100%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+
+        background: var(--bg-surface);
+        color: var(--primary);
+
+        padding: 10px 12px;
+
+        font-size: 0.8rem;
+        font-weight: var(--font-weight-medium);
+
+        cursor: pointer;
+        transition: all .2s ease;
+    }
+
+    .group-action-btn:hover {
+        background: var(--primary-lt);
+        border-color: var(--primary);
+    }
+
+    .group-action-btn i {
+        font-size: 0.9rem;
+    }
+</style>
+
+<main class="main">
+
+    <!-- Groups Modal -->
+    <div class="groups-modal-overlay" id="groupsModal">
+
+        <div class="groups-modal">
+
+            <div class="groups-modal-header">
+                <div>
+                    <h3>Add Groups</h3>
+                    <p>Groups will be created automatically</p>
+                </div>
+
+                <button type="button" class="groups-close-btn" id="closeGroupsModal">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+
+
+            <div class="groups-modal-body">
+
+                <div class="reg-group">
+
+                    <label class="reg-label" for="group_names">
+                        Group Names
+                    </label>
+
+                    <div class="reg-input-wrap">
+                        <i class="bi bi-people reg-input-icon"></i>
+
+                        <textarea class="reg-input groups-textarea" id="group_names" name="group_names" rows="6"
+                            placeholder="Group A&#10;Group B&#10;Group C&#10;Group D"></textarea>
+                    </div>
+
+                    <small class="groups-help-text">
+                        One group name per line and no commas.
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="groups-modal-footer">
+                <button type="button" class="groups-cancel-btn" id="cancelGroupsModal">
+                    Cancel
+                </button>
+
+                <button type="button" class="groups-save-btn" id="saveGroups">
+                    <i class="bi bi-check-lg"></i>
+                    Create Groups
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+
+    <div class="page-wrapper">
+
+        <div class="page-header">
+            <div class="page-header-row">
+                <div>
+
+                    <h1 class="page-title">Groups</h1>
+                    <div class="page-pretitle">Organize registered students into class groups</div>
+
+                </div>
+                <div class="page-actions">
+                    <button id="openUploadModal" class="btn btn-outline">Export</button>
+                    <button class="btn btn-primary" id="openGroupsModal">+ Create groups</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row col-1">
+            <div class="alert alert-error"><svg class="alert-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                    stroke-width="1.5">
+                    <circle cx="8" cy="8" r="6"></circle>
+                    <path d="M8 4v5M8 11v.01"></path>
+                </svg>
+                <div class="alert-body">
+                    <strong>8 students.</strong>are not assigned to any group.
+                </div>
+            </div>
+        </div>
+
+        <div class="col-4 row">
+            <div class="col-4">
+                <div class="group-card">
+
+                    <div class="group-card-header">
+                        <h3 class="group-name">Group 1</h3>
+                        <span class="group-count">10 Students</span>
+                    </div>
+
+                    <div class="group-members">
+
+                        <div class="member">
+                            <div class="member-avatar">JB</div>
+
+                            <div class="member-details">
+                                <div class="member-name">John Banda</div>
+                                <div class="member-email">john@email.com</div>
+                            </div>
+                        </div>
+
+                        <div class="member">
+                            <div class="member-avatar">MP</div>
+
+                            <div class="member-details">
+                                <div class="member-name">Mary Phiri</div>
+                                <div class="member-email">mary@email.com</div>
+                            </div>
+                        </div>
+
+                        <div class="member">
+                            <div class="member-avatar">AC</div>
+
+                            <div class="member-details">
+                                <div class="member-name">Alex Chirwa</div>
+                                <div class="member-email">alex@email.com</div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="group-footer">
+                        <button class="group-action-btn">
+                            <i class="bi bi-person-plus"></i>
+                            Add Student
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+</main>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const modal = document.getElementById("groupsModal");
+
+    const openBtn = document.getElementById("openGroupsModal");
+    const closeBtn = document.getElementById("closeGroupsModal");
+    const cancelBtn = document.getElementById("cancelGroupsModal");
+    const saveBtn = document.getElementById("saveGroups");
+
+    const groupNames = document.getElementById("group_names");
+
+
+    function openGroupsModal() {
+        modal.classList.add("active");
+
+        // Focus textarea after modal opens
+        setTimeout(() => {
+            groupNames.focus();
+        }, 200);
+    }
+
+
+    function closeGroupsModal() {
+        modal.classList.remove("active");
+    }
+
+
+    openBtn.addEventListener("click", openGroupsModal);
+
+    closeBtn.addEventListener("click", closeGroupsModal);
+
+    cancelBtn.addEventListener("click", closeGroupsModal);
+
+
+    // Close when clicking outside the modal
+    modal.addEventListener("click", (event) => {
+
+        if (event.target === modal) {
+            closeGroupsModal();
+        }
+
+    });
+
+
+    // Close with Escape
+    document.addEventListener("keydown", (event) => {
+
+        if (
+            event.key === "Escape" &&
+            modal.classList.contains("active")
+        ) {
+            closeGroupsModal();
+        }
+
+    });
+
+
+    // Create groups
+    saveBtn.addEventListener("click", () => {
+
+        const groups = groupNames.value
+            .split("\n")
+            .map(group => group.trim())
+            .filter(group => group.length > 0);
+
+
+        if (groups.length === 0) {
+            groupNames.focus();
+            return;
+        }
+
+
+        console.log("Groups:", groups);
+
+        /*
+         * Example result:
+         *
+         * [
+         *     "Group A",
+         *     "Group B",
+         *     "Group C",
+         *     "Group D"
+         * ]
+         *
+         * You can send this to Flask here using fetch().
+         */
+
+
+        closeGroupsModal();
+
+    });
+
+});
+</script>
+
+
+
+{% endblock %}

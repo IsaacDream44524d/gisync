@@ -1,8 +1,8 @@
-"""initial migrate
+"""new tables
 
-Revision ID: dc80e4cfe614
+Revision ID: 85370c739b61
 Revises: 
-Create Date: 2026-08-06 16:35:41.993117
+Create Date: 2026-09-01 04:12:49.157589
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'dc80e4cfe614'
+revision = '85370c739b61'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -37,6 +37,17 @@ def upgrade():
         batch_op.create_index(batch_op.f('ix_course_code'), ['code'], unique=True)
         batch_op.create_index(batch_op.f('ix_course_id'), ['id'], unique=False)
         batch_op.create_index(batch_op.f('ix_course_name'), ['name'], unique=True)
+
+    op.create_table('group',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=50), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    with op.batch_alter_table('group', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_group_created_at'), ['created_at'], unique=False)
+        batch_op.create_index(batch_op.f('ix_group_id'), ['id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_group_name'), ['name'], unique=True)
 
     op.create_table('user',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -119,6 +130,25 @@ def upgrade():
         batch_op.create_index(batch_op.f('ix_schedule_end_time'), ['end_time'], unique=False)
         batch_op.create_index(batch_op.f('ix_schedule_id'), ['id'], unique=False)
         batch_op.create_index(batch_op.f('ix_schedule_start_time'), ['start_time'], unique=False)
+
+    op.create_table('student',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('username', sa.String(length=25), nullable=False),
+    sa.Column('email', sa.String(length=120), nullable=False),
+    sa.Column('year', sa.Integer(), nullable=False),
+    sa.Column('role', sa.Enum('STUDENT', 'ADMIN', 'SUPER_ADMIN', name='userrole'), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('group_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['group_id'], ['group.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    with op.batch_alter_table('student', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_student_created_at'), ['created_at'], unique=False)
+        batch_op.create_index(batch_op.f('ix_student_email'), ['email'], unique=True)
+        batch_op.create_index(batch_op.f('ix_student_id'), ['id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_student_role'), ['role'], unique=False)
+        batch_op.create_index(batch_op.f('ix_student_username'), ['username'], unique=True)
+        batch_op.create_index(batch_op.f('ix_student_year'), ['year'], unique=False)
 
     op.create_table('download_log',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -206,6 +236,15 @@ def downgrade():
         batch_op.drop_index(batch_op.f('ix_download_log_downloaded_at'))
 
     op.drop_table('download_log')
+    with op.batch_alter_table('student', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_student_year'))
+        batch_op.drop_index(batch_op.f('ix_student_username'))
+        batch_op.drop_index(batch_op.f('ix_student_role'))
+        batch_op.drop_index(batch_op.f('ix_student_id'))
+        batch_op.drop_index(batch_op.f('ix_student_email'))
+        batch_op.drop_index(batch_op.f('ix_student_created_at'))
+
+    op.drop_table('student')
     with op.batch_alter_table('schedule', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_schedule_start_time'))
         batch_op.drop_index(batch_op.f('ix_schedule_id'))
@@ -242,6 +281,12 @@ def downgrade():
         batch_op.drop_index(batch_op.f('ix_user_created_at'))
 
     op.drop_table('user')
+    with op.batch_alter_table('group', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_group_name'))
+        batch_op.drop_index(batch_op.f('ix_group_id'))
+        batch_op.drop_index(batch_op.f('ix_group_created_at'))
+
+    op.drop_table('group')
     with op.batch_alter_table('course', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_course_name'))
         batch_op.drop_index(batch_op.f('ix_course_id'))

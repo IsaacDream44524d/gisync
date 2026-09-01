@@ -14,5 +14,9 @@ def access_denied_page(error):
 def internal_server_error(error):
     return render_template('errors/page_404.html', title='server error'), 500
 
+@errors.app_errorhandler(503)
+def internal_server_error(error):
+    return render_template('errors/maintenance.html', title='service unavailable'), 503
+
 
 

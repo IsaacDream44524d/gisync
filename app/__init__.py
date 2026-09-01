@@ -1,4 +1,4 @@
-from flask import Flask, url_for, redirect, session
+from flask import Flask, app, url_for, redirect, session, request, abort
 from app.config import Config
 from app.utils.vite import ViteAssets
 from app.extensions import migrate, db, login_manager, bcrypt, cache
@@ -8,7 +8,10 @@ from flask_login import current_user
 from app.services.user_service import UserRole
 
 
-load_dotenv()
+import os
+
+if os.environ.get("FLASK_ENV") == "development":
+    load_dotenv()
 
 
 def create_app():
@@ -25,15 +28,22 @@ def create_app():
     }
 
     # for development only
-    app.config['SQLALCHEMY_ECHO'] = True
+    app.config['SQLALCHEMY_ECHO'] = app.debug
     app.config['SESSION_COOKIES_SAMESITE'] = 'Lax'
     #FOR DEVELOPMENT ONLY
 
-    app.config['SESSION_COOKIES_HTTPONLY'] = True
-    app.config['REMEMBER_COOKIES_DURATION'] = 3600 * 24 * 7
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['SESSION_COOKIE_SECURE'] = True
+    app.config['REMEMBER_COOKIE_SECURE'] = True
+
+    from datetime import timedelta
+
+    app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=7)
 
     app.config['CACHE_TYPE'] = 'SimpleCache'
     app.config['CACHE_DEFAULT_TIMEOUT'] = 300
+    app.config.from_pyfile('config.py', silent=True)
     
 
     db.init_app(app)
@@ -64,19 +74,44 @@ def create_app():
         app.jinja_env.globals["vite"] = ViteAssets()
 
 
+    # logic for shutting system off for maintenance
+    app.config['MAINTENANCE_MODE'] = {
+        'admin': True,
+        'student': True,
+        'main': True,
+        'auth': True
+    }
+
+
     from app.routes.admin import admin
     from app.routes.auth import auth
     from app.routes.main import main
     from app.routes.student import student
+    from app.routes.registration import students
+    from app.routes.classrep import supervisor
     
     app.register_blueprint(admin, url_prefix='/admin')
     app.register_blueprint(auth, url_prefix='/auth')
+    app.register_blueprint(supervisor, url_prefix='/classrep')
+    app.register_blueprint(students, url_prefix='/student')
     app.register_blueprint(errors)
     app.register_blueprint(main)
     app.register_blueprint(student)
 
+    @app.before_request
+    def maintenance():
+        active_blueprints = request.blueprint
+
+        maintenance_config = app.config.get('MAINTENANCE_MODE', {})
+
+        is_down = maintenance_config.get(active_blueprints, False)
+
+        if is_down:
+            abort(503) #service unvailable
+
     @app.route('/')
     def index():
-        return redirect(url_for('auth.login'))
+        # return redirect(url_for('auth.login'))
+        return redirect(url_for('students.registrar'))
 
     return app

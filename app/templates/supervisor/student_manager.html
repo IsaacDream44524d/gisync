@@ -1,0 +1,409 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+
+<main class="main">
+
+    <div class="page-wrapper">
+
+        <div class="page-header">
+            <div class="page-header-row">
+                <div>
+                    <div class="page-pretitle">Admin</div>
+                    <h1 class="page-title">Student management</h1>
+                </div>
+                <div class="page-actions">
+                    <button id="export" class="btn btn-outline">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-box-arrow-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M3.5 10a.5.5 0 0 1-.5-.5v-8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 0 0 1h2A1.5 1.5 0 0 0 14 9.5v-8A1.5 1.5 0 0 0 12.5 0h-9A1.5 1.5 0 0 0 2 1.5v8A1.5 1.5 0 0 0 3.5 11h2a.5.5 0 0 0 0-1z" />
+                            <path fill-rule="evenodd"
+                                d="M7.646 15.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 14.293V5.5a.5.5 0 0 0-1 0v8.793l-2.146-2.147a.5.5 0 0 0-.708.708z" />
+                        </svg>
+                        Export</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row col-1">
+            <!-- Import Result Banner -->
+            <div id="importResult" class="import-result hidden"></div>
+        </div>
+
+
+        <div class="card">
+            <!-- table headers -->
+            <div class="card-header" style="gap:12px;flex-wrap:wrap">
+                <div class="users-filters">
+                    <div class="search-box" style="width:240px">
+                        <svg class="s-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="7" cy="7" r="5" />
+                            <path d="M11 11l3.5 3.5" />
+                        </svg>
+                        <input type="text" id="users-search" placeholder="Search by name or email…"
+                            aria-label="Search users">
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+
+                    <!-- skeleton loader -->
+                    <span class="skeleton hidden skeleton-rect" style="width:100%;height:100vh"></span>
+
+                    <!-- table row -->
+                    <table style="position: relative;" class="table">
+
+                        <thead>
+                            <tr>
+                                <th style="width:40px"><input type="checkbox" id="select-all"
+                                        aria-label="Select all rows"></th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Group</th>
+                                <th>Status</th>
+                                <th data-orderable="false"></th>
+                            </tr>
+                        </thead>
+
+
+                        <tbody id="users-rows">
+                            {% for user in students %}
+                            <tr data-name="{{ user.username|lower }}" data-email="{{ user.email|lower }}"
+                                data-role="{{ user.role.value }}">
+                                <td>
+                                    <input type="checkbox" class="row-cb">
+                                </td>
+
+                                <td>
+                                    <div class="cell-customer">
+                                        <div class="cell-avatar">
+                                            {{ user.username[:2].upper() }}
+                                        </div>
+
+                                        <div class="cell-strong">
+                                            {{ user.username }}
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    {{ user.email }}
+                                </td>
+
+                                <td>
+                                    <span class="role-chip role-blue">
+                                        {{ user.group.name if user.group else 'No Group' }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {% if user.group %}
+                                    <span class="status status-green">Assigned</span>
+                                    {% else %}
+                                    <span class="status status-yellow">Unassigned</span>
+                                    {% endif %}
+                                </td>
+
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+
+                    </table>
+
+                    <!-- pagination -->
+                    <div class="dt-layout-row">
+                        <div class="dt-layout-cell dt-layout-start">
+                            <div class="dt-info">
+                                Showing
+                                {{ pagination.first }}–{{ pagination.last }}
+                                of {{ pagination.total }}
+                            </div>
+                        </div>
+
+                        <div class="dt-layout-cell dt-layout-end">
+                            <div class="dt-paging">
+                                <nav aria-label="pagination">
+
+                                    <!-- First -->
+                                    <a class="dt-paging-button first {% if not pagination.has_prev %}disabled{% endif %}"
+                                        href="{{ url_for(request.endpoint, page=1) if pagination.has_prev else '#' }}">
+                                        «
+                                    </a>
+
+                                    <!-- Previous -->
+                                    <a class="dt-paging-button previous {% if not pagination.has_prev %}disabled{% endif %}"
+                                        href="{{ url_for(request.endpoint, page=pagination.prev_num) if pagination.has_prev else '#' }}">
+                                        ←
+                                    </a>
+
+                                    <!-- Page Numbers -->
+                                    {% for page_num in pagination.iter_pages() %}
+                                    {% if page_num %}
+                                    <a class="dt-paging-button {% if page_num == pagination.page %}current{% endif %}"
+                                        href="{{ url_for(request.endpoint, page=page_num) }}">
+                                        {{ page_num }}
+                                    </a>
+                                    {% endif %}
+                                    {% endfor %}
+
+                                    <!-- Next -->
+                                    <a class="dt-paging-button next {% if not pagination.has_next %}disabled{% endif %}"
+                                        href="{{ url_for(request.endpoint, page=pagination.next_num) if pagination.has_next else '#' }}">
+                                        →
+                                    </a>
+
+                                    <!-- Last -->
+                                    <a class="dt-paging-button last {% if not pagination.has_next %}disabled{% endif %}"
+                                        href="{{ url_for(request.endpoint, page=pagination.pages) if pagination.has_next else '#' }}">
+                                        »
+                                    </a>
+
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<script>
+
+
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const searchInput = document.getElementById("users-search");
+        const roleFilter = document.getElementById("filter-role");
+        const statusFilter = document.getElementById("filter-status");
+        const selectAll = document.getElementById("select-all");
+
+        function filterRows() {
+
+            const searchText =
+                (searchInput?.value || "")
+                    .toLowerCase()
+                    .trim();
+
+            const selectedRole =
+                roleFilter?.value || "";
+
+            const selectedStatus =
+                statusFilter?.value || "";
+
+            const rows =
+                document.querySelectorAll("#users-rows tr");
+
+            rows.forEach(row => {
+
+                const name =
+                    row.dataset.name || "";
+
+                const email =
+                    row.dataset.email || "";
+
+                const role =
+                    row.dataset.role || "";
+
+                const status =
+                    row.dataset.status || "";
+
+                const matchesSearch =
+                    !searchText ||
+                    name.includes(searchText) ||
+                    email.includes(searchText);
+
+                const matchesRole =
+                    !selectedRole ||
+                    role === selectedRole;
+
+                const matchesStatus =
+                    !selectedStatus ||
+                    status === selectedStatus;
+
+                row.style.display =
+                    matchesSearch &&
+                        matchesRole &&
+                        matchesStatus
+                        ? ""
+                        : "none";
+            });
+        }
+
+        searchInput?.addEventListener("input", filterRows);
+        roleFilter?.addEventListener("change", filterRows);
+        statusFilter?.addEventListener("change", filterRows);
+
+        selectAll?.addEventListener("change", function () {
+
+            document
+                .querySelectorAll("#users-rows .row-cb")
+                .forEach(cb => {
+                    cb.checked = this.checked;
+                });
+
+        });
+
+    });
+
+    //add logic to remove popover when scolling
+    function toggleMenu(userId, button, e) {
+
+        e.stopPropagation()
+
+        menu = document.getElementById(`menu-${userId}`);
+
+        window.onclick = function () {
+            menu.classList.remove("open-up", "open-down");
+            menu.style.display = 'none';
+        }
+
+        //close current opened menu
+        document
+            .querySelectorAll(".menu-pop")
+            .forEach(menu => {
+
+                if (menu.id !== `menu-${userId}`) {
+                    menu.classList.remove("open-up", "open-down");
+                    menu.style.display = 'none';
+                }
+
+            });
+
+        //toggle menu open
+        const isOpen = menu.style.display === 'block';
+
+        if (isOpen) {
+            menu.style.display = 'none';
+            menu.classList.remove("open-up", "open-down");
+            return;
+        }
+
+        menu.style.visibility = 'hidden';
+        menu.style.display = 'block';
+
+        const buttonRect = button.getBoundingClientRect();
+        const menuHeight = menu.offsetHeight;
+
+        const spaceAbove = buttonRect.top;
+        const spaceBelow = window.innerHeight - buttonRect.bottom
+
+        const margin = 9;
+
+        if (spaceBelow < spaceAbove + margin) {
+            menu.classList.add('open-up')
+        } else {
+            menu.classList.add('open-down');
+        }
+
+        menu.style.visibility = 'visible';
+
+
+    }
+
+    document.addEventListener("click", function (e) {
+
+        if (!e.target.closest(".user-actions")) {
+
+            document
+                .querySelectorAll(".menu-pop")
+                .forEach(menu =>
+                    menu.classList.remove("show")
+
+                );
+
+
+        }
+
+
+
+    });
+
+
+
+
+    const modal = document.getElementById("uploadModal");
+    const closeBtn = document.getElementById("closeUploadModal");
+    const cancelBtn = document.getElementById("cancelUpload");
+
+    const dropzone = document.getElementById("dropzone");
+    const fileInput = document.getElementById("fileInput");
+    const uploadForm = document.getElementById("uploadForm");
+    const openBtn = document.getElementById("openUploadModal");
+    const selectedFile = document.getElementById("selectedFile");
+
+    openBtn.addEventListener("click", () => {
+        modal.classList.add("show");
+    });
+
+    function closeModal() {
+        modal.classList.remove("show");
+    }
+
+    dropzone.addEventListener("click", () => {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener("change", () => {
+        showFile();
+    });
+
+    function showFile() {
+        if (fileInput.files.length) {
+            selectedFile.textContent =
+                fileInput.files[0].name;
+        }
+    }
+
+    dropzone.addEventListener("dragover", e => {
+        e.preventDefault();
+        dropzone.classList.add("dragover");
+    });
+
+    dropzone.addEventListener("dragleave", () => {
+        dropzone.classList.remove("dragover");
+    });
+
+    dropzone.addEventListener("drop", e => {
+        e.preventDefault();
+
+        dropzone.classList.remove("dragover");
+
+        fileInput.files = e.dataTransfer.files;
+
+        showFile();
+    });
+
+    uploadForm.addEventListener("submit", async e => {
+        e.preventDefault();
+
+        if (!fileInput.files.length) {
+            //style for no file selection
+            document.querySelector('#selectedFile').textContent = 'No file selected';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+        formData.append("category", "students")
+
+        closeModal();
+        importStudents(formData);
+
+
+    });
+
+    closeBtn.addEventListener("click", closeModal);
+    cancelBtn.addEventListener("click", closeModal);
+
+</script>
+
+{% endblock %}

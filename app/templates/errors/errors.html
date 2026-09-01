@@ -13,10 +13,9 @@
 
     <title>GISync</title>
     {% endif %} {{ vite.cssAsset }} {{ vite.jsAsset }}
- </head>
+</head>
 
 <style>
-    
     .error-page {
         min-height: 100vh;
         display: flex;
@@ -62,9 +61,50 @@
         gap: var(--space-2);
         justify-content: center;
     }
+
     a:hover {
         text-decoration: none;
     }
+
+    .status-page-meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-3);
+        margin: 20px 0 24px;
+        text-align: left;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 14px 16px;
+    }
+
+    .status-page-meta .meta-label {
+        font-size: 10.5px;
+        font-weight: var(--font-weight-bold);
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: var(--text-muted);
+        margin-bottom: 2px;
+    }
+
+    .status-page-meta .meta-value {
+        font-size: 13px;
+        color: var(--text);
+        font-weight: var(--font-weight-medium);
+    }
+
+    .status-page-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: var(--primary-lt);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
 </style>
 
 <body data-shell="admin" data-page="dashboard" data-breadcrumb="Home > Dashboard">

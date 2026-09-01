@@ -1,8 +1,11 @@
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from app.extensions import cache
+from flask import request
+from app.extensions import db
 
 from app.models.user import User
+from app.models.students import Student
 from app.models.file import File
 from app.models.downloadLog import DownloadLog
 from app.models.course import Course
@@ -48,4 +51,15 @@ def getStudentStats(session: Session, userId: int) -> dict:
 
 def getAllStudents(session: Session, select: select) -> dict:
     return session.scalars(select(User).order_by(User.created_at.desc())).all()
-   
+
+from sqlalchemy.orm import joinedload
+
+def getStudents(session: Session):
+    page = request.args.get("page", 1, type=int)
+
+    return db.paginate(
+        select(Student).order_by(Student.created_at.desc()),
+        page=page,
+        per_page=10
+    )
+

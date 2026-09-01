@@ -10,3 +10,8 @@ class ReportStatus(enum.Enum):
     PENDING = 'pending'
     RESOLVED = 'resolved'
     DISMISSES = 'dismissed'
+
+
+class Gender(enum.Enum):
+    MALE = "male"
+    FEMALE = "female"

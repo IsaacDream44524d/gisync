@@ -5,7 +5,7 @@ from app.extensions import db
 class PermissionError(Exception):
     pass
 
-def roleChangeError(user: User, target: User, role: UserRole):
+def roleChange(user: User, target: User, role: UserRole):
     try:
         new_role = UserRole(role.lower())
 

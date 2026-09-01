@@ -1,0 +1,258 @@
+{% extends 'auth/form.html' %}
+
+{% block form %}
+
+<style>
+  /* Wrapper becomes invalid */
+  .is-invalid {
+    border: 1px solid #ef4444;
+    background: rgba(239, 68, 68, 0.06);
+    border-radius: 12px;
+    position: relative;
+    transition: all 0.2s ease;
+  }
+
+  /* Invalid input field */
+  .is-invalid .reg-input {
+    border-color: #ef4444 !important;
+    color: #991b1b;
+  }
+
+  /* Focus state for invalid input */
+  .is-invalid .reg-input:focus {
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+    outline: none;
+  }
+
+  /* Label */
+  .is-invalid .reg-label {
+    color: #dc2626;
+    font-weight: 600;
+  }
+
+  /* Icons inside invalid field */
+  .is-invalid i {
+    color: #dc2626;
+  }
+
+  /* Error message container */
+  .error-feedback {
+    margin-top: 6px;
+    padding-left: 4px;
+  }
+
+  /* Error text */
+  .form-error {
+    display: block;
+    color: #dc2626;
+    font-size: 0.85rem;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  @keyframes shake {
+
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+
+    20% {
+      transform: translateX(-4px);
+    }
+
+    40% {
+      transform: translateX(4px);
+    }
+
+    60% {
+      transform: translateX(-4px);
+    }
+
+    80% {
+      transform: translateX(4px);
+    }
+  }
+
+  .is-invalid-input {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+  }
+
+  .is-invalid {
+    animation: shake 0.35s ease;
+  }
+</style>
+
+
+
+
+<div class="reg-card">
+
+  <div class="reg-header">
+    <div class="reg-brand">GISync</div>
+    <div class="reg-title">Class Registration</div>
+  </div>
+
+  <div class="reg-body">
+
+    <!-- Registration Form -->
+    <div class="reg-panel" id="registrationPanel" {% if success %} style="display: none;" {% endif %}>
+
+      <div class="reg-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+          <path d="M8 9a5 5 0 0 0-5 5 .5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5 5 5 0 0 0-5-5z" />
+        </svg>
+      </div>
+
+      <h2 class="reg-heading">
+        Student Registration
+      </h2>
+
+      <p class="reg-subheading">
+        Register your details to be included
+        in your class groups.
+      </p>
+
+      <form method="POST" action="{{ url_for('students.registrar') }}" novalidate id="registrationForm">
+
+        {{ form.hidden_tag() }}
+
+        <div class="reg-group">
+
+          {{ form.fullname.label(class='reg-label') }}
+
+          <div class="reg-input-wrap">
+            <i class="bi bi-person reg-input-icon"></i>
+
+            {{ form.fullname(
+            placeholder='Enter your full name',
+            class='reg-input' + (' is-invalid-input' if form.fullname.errors else '')
+            ) }}
+
+            {% if form.fullname.errors %}
+            <i class="bi bi-exclamation-circle-fill reg-error-icon"></i>
+            {% endif %}
+          </div>
+
+          {% if form.fullname.errors %}
+          <div class="error-feedback">
+            {% for error in form.fullname.errors %}
+            <small class="form-error">{{ error }}</small>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+        </div>
+
+        <div class="reg-group">
+
+          {{ form.email.label(class='reg-label') }}
+
+          <div class="reg-input-wrap">
+            <i class="bi bi-envelope reg-input-icon"></i>
+
+            {{ form.email(
+            placeholder='gis0025@must.ac.mw',
+            class='reg-input' + (' is-invalid-input' if form.email.errors else '')
+            ) }}
+
+            {% if form.email.errors %}
+            <i class="bi bi-exclamation-circle-fill reg-error-icon"></i>
+            {% endif %}
+          </div>
+
+          {% if form.email.errors %}
+          <div class="error-feedback">
+            {% for error in form.email.errors %}
+            <small class="form-error">{{ error }}</small>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+        </div>
+
+        <div class="reg-group">
+
+          {{ form.gender.label(class="reg-label") }}
+
+          <div class="reg-input-wrap">
+            <i class="bi bi-gender-ambiguous reg-input-icon"></i>
+            {{ form.gender(class="reg-input", id="gender") }}
+          </div>
+
+          {% if form.gender.errors %}
+          {% for error in form.gender.errors %}
+          <span class="error-text">{{ error }}</span>
+          {% endfor %}
+          {% endif %}
+
+        </div>
+
+
+
+        <button type="submit" id="submitBtn" class="reg-submit btn-primary" name="{{ form.submit_btn.name }}"
+          value="{{ form.submit_btn.value }}">
+          Register
+        </button>
+
+      </form>
+
+      <div class="reg-footer-note">
+        Your information will be used
+        to organize class groups and and any GIS class activities.
+      </div>
+
+    </div>
+
+    <!-- Success Panel -->
+    <div class="reg-panel reg-success-panel" id="successPanel" {% if not success %} style="display: none;" {% endif %}>
+
+      <div class="reg-success">
+
+        <div class="reg-success-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" fill="currentColor" viewBox="0 0 16 16">
+            <path
+              d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.97 11.03 12.03 5.97l-.708-.708L6.97 9.616 4.678 7.323l-.708.708 3 3z" />
+          </svg>
+        </div>
+
+        <h2 class="reg-success-title">
+          Registration Complete
+        </h2>
+
+        <p class="reg-success-text">
+          Your details have been successfully
+          registered.
+          <br><br>
+          You can close this page now.
+        </p>
+
+      </div>
+
+    </div>
+
+
+
+
+
+  </div>
+
+</div>
+
+<script>
+  document.getElementById("registrationForm").addEventListener("submit", function () {
+    const btn = document.getElementById("submitBtn");
+
+    btn.disabled = true;
+    btn.value = "Submitting...";
+  });
+</script>
+
+
+
+
+
+{% endblock %}

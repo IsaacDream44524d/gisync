@@ -41,6 +41,18 @@ def login():
         login_user(user, remember=form.remember_me.data)
 
         #redirect user to the page they wanted
+
+        login_user(user, remember=form.remember_me.data)
+
+        # next_page = request.args.get('next')
+
+        # if next_page and next_page.startswith('/'):
+        #     return redirect(next_page)
+
+        # if user.role.value == 'student':
+        #     return redirect(url_for('student.dashboard'))
+
+        # return redirect(url_for('admin.dashboard'))
         next_page = request.args.get('next')
         if not next_page or not next_page.startswith('/'):
 

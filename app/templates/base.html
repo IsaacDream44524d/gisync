@@ -23,6 +23,7 @@
   <script>
     window.ROUTES = {
       dashboard: "{{ url_for('admin.dashboard') }}",
+      class_rep_dashboard: "{{ url_for('supervisor.dashboard') }}",
       userManagement: "{{ url_for('admin.userManagement') }}",
       profile: "{{ url_for('main.profile') }}",
       settings: "{{ url_for('main.settings') }}",
@@ -31,7 +32,9 @@
       workflow: "{{ url_for('admin.workflow') }}",
       notifications: "{{ url_for('main.notifications') }}",
       fileManagement: "{{ url_for('admin.fileManagement') }}",
-      logout: "{{ url_for('auth.logout') }}"
+      logout: "{{ url_for('supervisor.logout') }}",
+      students: "{{ url_for('supervisor.students') }}",
+      groups: "{{ url_for('supervisor.groups') }}"
     }
 
     window.USER = {

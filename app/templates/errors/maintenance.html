@@ -1,0 +1,31 @@
+{% extends 'errors/errors.html' %}
+
+{% block error %}
+
+<div class="error-page">
+  <div class="error-content" style="max-width:560px">
+    <div class="status-page-icon">
+      <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 6v6l4 2" />
+      </svg>
+    </div>
+    <div class="error-title">We're working on something new</div>
+    <div class="error-message">
+      This feature is currently under development as we continue improving
+      GISyc. It will be available once development and testing are complete.
+    </div>
+    <div class="status-page-meta">
+      <div class="meta-item">
+        <div class="meta-label">Started</div>
+        <div class="meta-value">Aug 27, 2026 · 18:55 GMT</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Estimated completion</div>
+        <div class="meta-value">Feb 01, 2027 · 00:00 GMT</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
