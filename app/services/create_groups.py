@@ -6,7 +6,6 @@ from app.services.stats import getStudents
 from app.models.students import Group
 from app.extensions import db
 
-
 def assign_students_to_groups(session, group_names):
     """
     If NEW groups are created:
@@ -35,8 +34,6 @@ def assign_students_to_groups(session, group_names):
     all_target_groups = existing_groups + new_groups
 
     # 3. Determine student pool to distribute
-    # If new groups were created -> reassign EVERYONE to achieve equal distribution
-    # If no new groups were created -> assign ONLY unassigned students
     if new_groups:
         students_to_assign = all_students
     else:
@@ -46,40 +43,46 @@ def assign_students_to_groups(session, group_names):
         db.session.commit()
         return all_target_groups
 
-    # 4. Initialize group sizes
-    # If reassigning everyone, start all sizes at 0. Otherwise, count current members.
+    # 4. Initialize group metrics (Track total sizes AND female count)
     group_sizes = {}
+    female_counts = {}
+    
     for g in all_target_groups:
         if new_groups:
             group_sizes[g] = 0
+            female_counts[g] = 0
         else:
-            current_count = len(g.students) if hasattr(g, 'students') and g.students else 0
-            group_sizes[g] = current_count
+            # Count existing members if only assigning to existing groups
+            members = getattr(g, 'students', []) or []
+            group_sizes[g] = len(members)
+            female_counts[g] = sum(1 for s in members if str(s.getGender()).lower() in ("female", "f"))
 
     # 5. Categorize students by gender
     females = [s for s in students_to_assign if str(s.getGender()).lower() in ("female", "f")]
     males = [s for s in students_to_assign if str(s.getGender()).lower() in ("male", "m")]
     others = [s for s in students_to_assign if s not in females and s not in males]
 
-    # Helper function to place student into the smallest group
-    def assign_student(student):
-        smallest_group = min(all_target_groups, key=lambda g: group_sizes[g])
-        
-        student.group = smallest_group
+    # Helper function to assign a student to a target group
+    def assign_to_group(student, group):
+        student.group = group
         if hasattr(student, 'setGroup'):
             student.setGroup()
+        group_sizes[group] += 1
 
-        group_sizes[smallest_group] += 1
-
-    # 6. Distribute females, then males, then others
+    # 6A. Distribute FEMALES: Priority goes to groups with FEWEST females first,
+    # then breaking ties by overall group size.
     for student in females:
-        assign_student(student)
+        target_group = min(
+            all_target_groups, 
+            key=lambda g: (female_counts[g], group_sizes[g])
+        )
+        assign_to_group(student, target_group)
+        female_counts[target_group] += 1
 
-    for student in males:
-        assign_student(student)
-
-    for student in others:
-        assign_student(student)
+    # 6B. Distribute MALES & OTHERS: Balance overall group sizes
+    for student in males + others:
+        target_group = min(all_target_groups, key=lambda g: group_sizes[g])
+        assign_to_group(student, target_group)
 
     # 7. Commit changes to database
     db.session.commit()
