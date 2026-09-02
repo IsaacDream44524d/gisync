@@ -2,14 +2,16 @@ from flask import Flask, app, url_for, redirect, session, request, abort
 from app.config import Config
 from app.utils.vite import ViteAssets
 from app.extensions import migrate, db, login_manager, bcrypt, cache
-from dotenv import load_dotenv
 from app.utils.handers import errors
 from flask_login import current_user
+from app.models.user import User
+import click
 from app.services.user_service import UserRole
 import os
+from dotenv import load_dotenv
 
 # if os.environ.get("FLASK_ENV") == "development":
-load_dotenv()
+load_dotenv('.env')  # Load .env file in development mode
 
 
 def create_app():
@@ -24,6 +26,32 @@ def create_app():
         'pool_recycle': 1800, #-> closes and refresh any connection that lives forr 1800s to prevent timeout
         'max_overflow': 10 #-> allow 10 extra connection plus pool size when traffic spikes
     }
+
+    @app.cli.command("create-admin")
+    @click.option("--username", prompt=True)
+    @click.option("--email", prompt=True)
+    @click.option("--password", prompt=True, hide_input=True, confirmation_prompt=True)
+    def create_admin(username, email, password):
+
+        existing = User.query.filter_by(email=email).first()
+
+        if existing:
+            click.echo("User already exists.")
+            return
+
+        admin = User(
+            username=username,
+            email=email,
+            role=UserRole.ADMIN,
+            is_active=True
+        )
+
+        admin.setPassword(password)  # Use your existing password method
+
+        db.session.add(admin)
+        db.session.commit()
+
+        click.echo(f"Admin {email} created successfully.")
 
     # for development only
     app.config['SQLALCHEMY_ECHO'] = app.debug
