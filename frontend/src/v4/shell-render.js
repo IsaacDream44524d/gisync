@@ -164,7 +164,7 @@ export function renderTopbar(breadcrumb) {
         <kbd>⌘K</kbd>
       </div>
       <div class="topbar-right">
-        <button class="tb-avatar" type="button" aria-label="Account menu" aria-haspopup="menu" aria-expanded="false">I</button>
+        <button class="tb-avatar" type="button" aria-label="Account menu" aria-haspopup="menu" aria-expanded="false">${window.USER.username[0]}</button>
       </div>
     </header>
   `;
