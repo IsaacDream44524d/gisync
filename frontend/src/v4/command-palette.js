@@ -30,10 +30,9 @@ function buildItems() {
   });
   // Inline actions
   const actions = [
-    { label: 'Toggle theme', keywords: 'theme dark light mode toggle', action: toggleTheme },
     { label: 'Open profile', keywords: 'profile account user me', action: () => { window.location.href = 'profile.html'; } },
     { label: 'Open settings', keywords: 'settings preferences config', action: () => { window.location.href = 'settings.html'; } },
-    { label: 'Theme generator', keywords: 'theme color customize brand', action: () => { window.location.href = 'theme.html'; } },
+    
     { label: 'Help & support', keywords: 'help faq support docs', action: () => { window.location.href = 'faq.html'; } },
     {
       label: 'Sign out',

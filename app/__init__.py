@@ -6,12 +6,10 @@ from dotenv import load_dotenv
 from app.utils.handers import errors
 from flask_login import current_user
 from app.services.user_service import UserRole
-
-
 import os
 
-if os.environ.get("FLASK_ENV") == "development":
-    load_dotenv()
+# if os.environ.get("FLASK_ENV") == "development":
+load_dotenv()
 
 
 def create_app():

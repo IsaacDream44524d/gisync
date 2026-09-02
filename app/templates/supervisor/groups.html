@@ -4,8 +4,11 @@
 
 <style>
     /* ================================
-   Groups Modal
+    Groups Modal
 ================================ */
+    #downloadExportBtn:hover{
+        text-decoration: none;
+    }
 
     .groups-modal-overlay {
         position: fixed;
@@ -287,7 +290,7 @@
 
 
     /* ================================
-   Responsive
+    Responsive
 ================================ */
 
     @media (max-width: 600px) {
@@ -481,13 +484,20 @@
     .group-action-btn i {
         font-size: 0.9rem;
     }
+
+    .reg-error {
+        color: #ef4444;
+        font-size: 13px;
+        margin-top: 6px;
+    }
 </style>
 
 <main class="main">
 
-    <!-- Groups Modal -->
-    <div class="groups-modal-overlay" id="groupsModal">
 
+
+    <!-- Modal structure -->
+    <div class="groups-modal-overlay" id="groupsModal">
         <div class="groups-modal">
 
             <div class="groups-modal-header">
@@ -495,126 +505,117 @@
                     <h3>Add Groups</h3>
                     <p>Groups will be created automatically</p>
                 </div>
-
                 <button type="button" class="groups-close-btn" id="closeGroupsModal">
                     <i class="bi bi-x-lg"></i>
                 </button>
             </div>
 
-
             <div class="groups-modal-body">
-
                 <div class="reg-group">
-
-                    <label class="reg-label" for="group_names">
-                        Group Names
-                    </label>
-
+                    <label for="group_names" class="reg-label">Group Names</label>
                     <div class="reg-input-wrap">
                         <i class="bi bi-people reg-input-icon"></i>
-
-                        <textarea class="reg-input groups-textarea" id="group_names" name="group_names" rows="6"
-                            placeholder="Group A&#10;Group B&#10;Group C&#10;Group D"></textarea>
+                        <textarea class="groups-textarea" id="group_names" rows="5"
+                            placeholder="Enter one group name per line"></textarea>
                     </div>
-
-                    <small class="groups-help-text">
-                        One group name per line and no commas.
-                    </small>
-
+                    <!-- Container for validation errors -->
+                    <div id="js-error-message" class="reg-error" style="display: none;"></div>
                 </div>
-
             </div>
 
-
             <div class="groups-modal-footer">
-                <button type="button" class="groups-cancel-btn" id="cancelGroupsModal">
-                    Cancel
-                </button>
-
+                <button type="button" class="groups-cancel-btn" id="cancelGroupsModal">Cancel</button>
                 <button type="button" class="groups-save-btn" id="saveGroups">
-                    <i class="bi bi-check-lg"></i>
-                    Create Groups
+                    Create groups <i class="bi bi-arrow-right"></i>
                 </button>
             </div>
 
         </div>
-
     </div>
 
-
-
-
     <div class="page-wrapper">
+
 
         <div class="page-header">
             <div class="page-header-row">
                 <div>
-
                     <h1 class="page-title">Groups</h1>
                     <div class="page-pretitle">Organize registered students into class groups</div>
-
                 </div>
                 <div class="page-actions">
-                    <button id="openUploadModal" class="btn btn-outline">Export</button>
+                    {% if export_url %}
+                    <a id="downloadExportBtn" href="{{ export_url }}" target="_blank" class="btn btn-outline">
+                        <i style="color: red;" class="bi bi-file-earmark-excel"></i> Download XLSX
+                    </a>
+                    {% endif %}
                     <button class="btn btn-primary" id="openGroupsModal">+ Create groups</button>
                 </div>
             </div>
         </div>
 
         <div class="row col-1">
-            <div class="alert alert-error"><svg class="alert-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor"
-                    stroke-width="1.5">
-                    <circle cx="8" cy="8" r="6"></circle>
-                    <path d="M8 4v5M8 11v.01"></path>
-                </svg>
-                <div class="alert-body">
-                    <strong>8 students.</strong>are not assigned to any group.
+            {% if unassigned_count > 0 %}
+            <div class="row col-1">
+                <div class="alert alert-error">
+                    <svg class="alert-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="8" cy="8" r="6"></circle>
+                        <path d="M8 4v5M8 11v.01"></path>
+                    </svg>
+                    <div class="alert-body">
+                        <strong>{{ unassigned_count }} student(s)</strong> are not assigned to any group.
+                    </div>
                 </div>
             </div>
+            {% endif %}
+        </div>
+
+        <!-- Dynamic Success/Error Banner -->
+        <div class="row col-1">
+            <div id="importResult" class="import-result hidden"></div>
         </div>
 
         <div class="col-4 row">
+            {% if groups %}
+            {% for group in groups %}
             <div class="col-4">
                 <div class="group-card">
 
+                    <!-- Group Header -->
                     <div class="group-card-header">
-                        <h3 class="group-name">Group 1</h3>
-                        <span class="group-count">10 Students</span>
+                        <h3 class="group-name">{{ group.name }}</h3>
+                        <span class="group-count">
+                            {{ group.students|length }} Student{% if group.students|length != 1 %}s{% endif %}
+                        </span>
                     </div>
 
+                    <!-- Group Members List -->
                     <div class="group-members">
-
+                        {% if group.students %}
+                        {% for student in group.students %}
                         <div class="member">
-                            <div class="member-avatar">JB</div>
+                            <!-- Initials Avatar -->
+                            <div class="member-avatar">
+                                {{ student.getInitials() if student.getInitials is defined else
+                                student.username[:2]|upper }}
+                            </div>
 
                             <div class="member-details">
-                                <div class="member-name">John Banda</div>
-                                <div class="member-email">john@email.com</div>
+                                <div class="member-name">{{ student.username }}</div>
+                                <div class="member-email">{{ student.email }}</div>
                             </div>
                         </div>
-
-                        <div class="member">
-                            <div class="member-avatar">MP</div>
-
-                            <div class="member-details">
-                                <div class="member-name">Mary Phiri</div>
-                                <div class="member-email">mary@email.com</div>
-                            </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="member-empty"
+                            style="font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 10px 0;">
+                            No students assigned yet.
                         </div>
-
-                        <div class="member">
-                            <div class="member-avatar">AC</div>
-
-                            <div class="member-details">
-                                <div class="member-name">Alex Chirwa</div>
-                                <div class="member-email">alex@email.com</div>
-                            </div>
-                        </div>
-
+                        {% endif %}
                     </div>
 
+                    <!-- Footer Action -->
                     <div class="group-footer">
-                        <button class="group-action-btn">
+                        <button class="group-action-btn" type="button" data-group-id="{{ group.id }}">
                             <i class="bi bi-person-plus"></i>
                             Add Student
                         </button>
@@ -622,110 +623,129 @@
 
                 </div>
             </div>
+            {% endfor %}
+            {% else %}
+            <div class="col-1" style="width: 100%; text-align: center; padding: 40px 0; color: var(--text-muted);">
+                <p>No groups created yet. Click "+ Create groups" above to get started.</p>
+            </div>
+            {% endif %}
         </div>
-
-
 
     </div>
 </main>
 
-
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-
-    const modal = document.getElementById("groupsModal");
-
-    const openBtn = document.getElementById("openGroupsModal");
-    const closeBtn = document.getElementById("closeGroupsModal");
-    const cancelBtn = document.getElementById("cancelGroupsModal");
-    const saveBtn = document.getElementById("saveGroups");
-
-    const groupNames = document.getElementById("group_names");
 
 
-    function openGroupsModal() {
-        modal.classList.add("active");
+    document.addEventListener("DOMContentLoaded", () => {
+        const modal = document.getElementById("groupsModal");
+        const openBtn = document.getElementById("openGroupsModal");
+        const closeBtn = document.getElementById("closeGroupsModal");
+        const cancelBtn = document.getElementById("cancelGroupsModal");
+        const saveBtn = document.getElementById("saveGroups");
+        const textarea = document.getElementById("group_names");
+        const modalError = document.getElementById("js-error-message");
+        const banner = document.getElementById("importResult");
 
-        // Focus textarea after modal opens
-        setTimeout(() => {
-            groupNames.focus();
-        }, 200);
-    }
-
-
-    function closeGroupsModal() {
-        modal.classList.remove("active");
-    }
-
-
-    openBtn.addEventListener("click", openGroupsModal);
-
-    closeBtn.addEventListener("click", closeGroupsModal);
-
-    cancelBtn.addEventListener("click", closeGroupsModal);
-
-
-    // Close when clicking outside the modal
-    modal.addEventListener("click", (event) => {
-
-        if (event.target === modal) {
-            closeGroupsModal();
+        function openGroupsModal() {
+            modal.classList.add("active");
+            if (textarea) textarea.focus();
         }
 
-    });
-
-
-    // Close with Escape
-    document.addEventListener("keydown", (event) => {
-
-        if (
-            event.key === "Escape" &&
-            modal.classList.contains("active")
-        ) {
-            closeGroupsModal();
+        function closeGroupsModal() {
+            modal.classList.remove("active");
+            if (modalError) modalError.style.display = "none";
         }
 
-    });
+        if (openBtn) openBtn.addEventListener("click", openGroupsModal);
+        if (closeBtn) closeBtn.addEventListener("click", closeGroupsModal);
+        if (cancelBtn) cancelBtn.addEventListener("click", closeGroupsModal);
 
+        // Save Button AJAX Handler
+        if (saveBtn) {
+            saveBtn.addEventListener("click", async () => {
+                const rawData = textarea ? textarea.value.trim() : "";
 
-    // Create groups
-    saveBtn.addEventListener("click", () => {
+                if (!rawData) {
+                    if (modalError) {
+                        modalError.textContent = "Please enter group names.";
+                        modalError.style.display = "block";
+                    }
+                    return;
+                }
 
-        const groups = groupNames.value
-            .split("\n")
-            .map(group => group.trim())
-            .filter(group => group.length > 0);
+                // Lock submit button state
+                saveBtn.disabled = true;
+                saveBtn.textContent = "Processing...";
 
+                try {
+                    const response = await fetch("{{ url_for('supervisor.groups') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ group_names: rawData })
+                    });
 
-        if (groups.length === 0) {
-            groupNames.focus();
-            return;
+                    const data = await response.json();
+
+                    // Inside your modal form submit handler
+                    if (response.ok && data.success) {
+                        // Update the Download button link instantly with Supabase URL
+                        const downloadBtn = document.getElementById("downloadExportBtn");
+                        if (downloadBtn && data.download_url) {
+                            downloadBtn.href = data.download_url;
+                            downloadBtn.target = "_blank";
+                            downloadBtn.className = "btn btn-outline";
+                            downloadBtn.style.cssText = "color: #10b981; border-color: #A7F3D0;";
+                            downloadBtn.innerHTML = '<i class="bi bi-file-earmark-excel"></i> Download XLSX';
+                        }
+
+                        // Refresh page or update DOM
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    };
+
+                    if (response.ok && data.success) {
+                        // Reset modal
+                        if (textarea) textarea.value = "";
+                        closeGroupsModal();
+
+                        // Display success banner
+                        if (banner) {
+                            banner.className = "import-result alert alert-success";
+                            banner.innerHTML = `
+                            <svg class="alert-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <circle cx="8" cy="8" r="6"></circle>
+                                <path d="M5 8l2 2 4-4"></path>
+                            </svg>
+                            <div class="alert-body">
+                                <strong>Success!</strong> ${data.message}
+                            </div>
+                        `;
+                            banner.classList.remove("hidden");
+                        }
+                    } else {
+                        // Show validation error (e.g., duplicates) inside modal
+                        if (modalError) {
+                            modalError.textContent = data.message || "Failed to create groups.";
+                            modalError.style.display = "block";
+                        }
+                    }
+                } catch (err) {
+                    console.error("AJAX submit error:", err);
+                    if (modalError) {
+                        modalError.textContent = "Server communication failed.";
+                        modalError.style.display = "block";
+                    }
+                } finally {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = 'Create groups <i class="bi bi-arrow-right"></i>';
+                }
+            });
         }
-
-
-        console.log("Groups:", groups);
-
-        /*
-         * Example result:
-         *
-         * [
-         *     "Group A",
-         *     "Group B",
-         *     "Group C",
-         *     "Group D"
-         * ]
-         *
-         * You can send this to Flask here using fetch().
-         */
-
-
-        closeGroupsModal();
-
     });
-
-});
 </script>
-
-
 
 {% endblock %}

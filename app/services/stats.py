@@ -54,12 +54,45 @@ def getAllStudents(session: Session, select: select) -> dict:
 
 from sqlalchemy.orm import joinedload
 
-def getStudents(session: Session):
-    page = request.args.get("page", 1, type=int)
+def getStudents(session: Session, paginate=True):
 
-    return db.paginate(
-        select(Student).order_by(Student.created_at.desc()),
-        page=page,
-        per_page=10
-    )
+    if paginate:
+        page = request.args.get("page", 1, type=int)
 
+        return db.paginate(
+            select(Student).order_by(Student.created_at.desc()),
+            page=page,
+            per_page=10
+        )
+
+    return db.session.scalars(select(Student).order_by(Student.created_at.desc())).all()
+
+
+from sqlalchemy import select, func
+from app.models.students import Student, Group
+
+def get_group_stats(db_session):
+    # 1. Total Groups Count
+    total_groups = db_session.scalar(
+        select(func.count(Group.id))
+    ) or 0
+
+    # 2. Total Students
+    all_students = db_session.scalars(select(Student)).all()
+
+    # 3. Filter Assigned vs Unassigned
+    # (Handles hybrid scenarios where student.group_id or student.hasGroup() is used)
+    assigned_count = 0
+    unassigned_count = 0
+
+    for student in all_students:
+        if getattr(student, 'group_id', None) is not None or (hasattr(student, 'hasGroup') and student.hasGroup()):
+            assigned_count += 1
+        else:
+            unassigned_count += 1
+
+    return {
+        "assigned_students": assigned_count,
+        "unassigned_students": unassigned_count,
+        "total_groups": total_groups
+    }

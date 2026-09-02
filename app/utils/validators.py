@@ -18,3 +18,24 @@ class FormValidators:
                 raise ValidationError(error_msg)
 
         return _validator
+
+    @staticmethod
+    def parse_group_names(text):
+        group_names = []
+        seen = set()
+
+        for name in text.splitlines():
+            name = name.strip()
+
+            if not name:
+                continue
+
+            key = name.lower()
+
+            if key in seen:
+                raise ValueError(f"Duplicate group name: {name}")
+
+            seen.add(key)
+            group_names.append(name)
+
+        return group_names

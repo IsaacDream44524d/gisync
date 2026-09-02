@@ -1,36 +1,86 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, session, abort
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, abort, session
 from flask_login import login_user, current_user, logout_user, login_required
 from app.forms.auth.login import LoginForm
-from app.forms.auth.resetPassword import RequestResetForm
-from app.forms.auth.setPassword import ResetPasswordForm
 from sqlalchemy import select
 from app.models.user import User
 from app.extensions import db
-from app.utils.decorators import role_required
+from app.services.stats import get_group_stats
+from app.services.create_groups import assign_students_to_groups
 from app.services.stats import getStudents
+from app.utils.validators import FormValidators
+from app.models.students import Group
+from app.services.groups import cleanup_empty_groups
+from app.services.spreadsheet_exporter import generate_groups_excel_buffer
+from app.services.supabase_storage import upload_excel_to_supabase
 
 
 supervisor = Blueprint('supervisor', __name__, url_prefix='/classrep')
 
+# Store last generated download URL in app context or session if needed
+latest_export_url = None
 
 @supervisor.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('supervisor/supervisor_dashboard.html', title='dashboard')
+    group_stats = get_group_stats(db.session)
+    students_page = getStudents(db.session, paginate=True)
+
+    recent_students = students_page.items[:5]
+
+    return render_template('supervisor/supervisor_dashboard.html', title='dashboard', students=recent_students, group_stats=group_stats)
 
 
 @supervisor.route('/student-management')
 @login_required
 def students():
-    students = getStudents(db.session)
+    students = getStudents(db.session, paginate=True)
     return render_template('supervisor/student_manager.html', students=students.items, pagination=students, title='students-management')
 
-@supervisor.route('/groups')
+
+@supervisor.route('/groups', methods=["GET", "POST"])
 @login_required
 def groups():
-    group_names = request.form.get("group_names", "")
-    print(f'***************{group_names}')
-    return render_template('supervisor/groups.html', title='Groups')
+    if request.method == "POST":
+        data = request.get_json() or {}
+        raw_data = data.get("group_names", "")
+        
+        try:
+            # 1. Parse & Assign students to groups
+            groups_list = FormValidators.parse_group_names(raw_data)
+            assigned_groups = assign_students_to_groups(session, groups_list)
+
+            # 2. Automatically generate Excel & upload to Supabase (30-day signed URL)
+            excel_buffer = generate_groups_excel_buffer(db.session)
+
+            if assigned_groups and excel_buffer:
+                download_url = upload_excel_to_supabase(excel_buffer, expires_in_seconds=2592000)
+            
+                # Save the 30-day link in user's browser session
+                session['latest_export_url'] = download_url
+
+                return jsonify({
+                    "success": True,
+                    "message": "Created groups and uploaded 30-day export link to storage",
+                    "download_url": download_url
+                }), 200
+
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"success": False, "message": f"Error: {str(e)}"}), 400
+
+    # GET Request
+    cleanup_empty_groups(session)
+    all_groups = Group.query.all()
+    all_students = getStudents(session, paginate=False)
+    unassigned_count = len([student for student in all_students if not student.hasGroup()])
+
+    return render_template(
+        "supervisor/groups.html",
+        title="Groups",
+        groups=all_groups,
+        unassigned_count=unassigned_count,
+        export_url=session.get('latest_export_url')
+    )
 
 @supervisor.route('/login', methods=['GET', 'POST'])
 def login():

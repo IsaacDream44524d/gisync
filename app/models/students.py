@@ -43,6 +43,18 @@ class Student(UserMixin, db.Model):
         back_populates="students"
     )
 
+    def hasGroup(self):
+        return self.group
+
+    def getGender(self):
+        return self.gender
+
+    def setGroup(self, has_group: bool = True):
+        self.has_group = has_group
+
+    def __repr__(self):
+        return f"<Student {self.username} ({self.has_group})>"
+
 
 class Group(db.Model):
     __tablename__ = "group"
