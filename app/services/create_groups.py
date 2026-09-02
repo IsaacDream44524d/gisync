@@ -10,27 +10,16 @@ import random
 
 import random
 
+import random
+
 def assign_students_to_groups(session, group_names):
-    """
-    If new groups are created:
-        Reassign ALL students across all groups.
-
-    If only existing groups are used:
-        Assign ONLY unassigned students.
-
-    Rules:
-        - Every group gets one female first (if enough females exist).
-        - Remaining females are distributed evenly.
-        - Males and others are distributed to balance group sizes.
-    """
-
     if not group_names:
         return []
 
     # Get all students
     all_students = getStudents(session, paginate=False)
 
-    # Find existing groups
+    # Get existing groups
     existing_groups = Group.query.filter(
         Group.name.in_(group_names)
     ).all()
@@ -48,13 +37,15 @@ def assign_students_to_groups(session, group_names):
         session.add_all(new_groups)
         session.flush()
 
-    all_target_groups = existing_groups + new_groups
+    groups = existing_groups + new_groups
 
-    # Determine student pool
+    # --------------------------------------------------
+    # FULL REDISTRIBUTION IF NEW GROUPS CREATED
+    # --------------------------------------------------
+
     if new_groups:
         students_to_assign = all_students
 
-        # Clear existing assignments
         for student in students_to_assign:
             student.group = None
             student.group_id = None
@@ -62,38 +53,36 @@ def assign_students_to_groups(session, group_names):
             if hasattr(student, "setGroup"):
                 student.setGroup(False)
 
+        session.flush()
+
+        group_sizes = {g: 0 for g in groups}
+        female_counts = {g: 0 for g in groups}
+
     else:
         students_to_assign = [
             s for s in all_students
             if not s.hasGroup()
         ]
 
-    if not students_to_assign:
-        session.commit()
-        return all_target_groups
+        group_sizes = {}
+        female_counts = {}
 
-    # Track group sizes and female counts
-    group_sizes = {}
-    female_counts = {}
-
-    for group in all_target_groups:
-
-        if new_groups:
-            group_sizes[group] = 0
-            female_counts[group] = 0
-
-        else:
+        for group in groups:
             members = list(group.students or [])
-
             group_sizes[group] = len(members)
-
             female_counts[group] = sum(
-                1
-                for s in members
+                1 for s in members
                 if str(s.getGender()).lower() in ("female", "f")
             )
 
-    # Split by gender
+    if not students_to_assign:
+        session.commit()
+        return groups
+
+    # --------------------------------------------------
+    # SPLIT BY GENDER & SHUFFLE
+    # --------------------------------------------------
+
     females = [
         s for s in students_to_assign
         if str(s.getGender()).lower() in ("female", "f")
@@ -109,70 +98,47 @@ def assign_students_to_groups(session, group_names):
         if str(s.getGender()).lower() not in ("female", "f", "male", "m")
     ]
 
-    # Randomize
     random.shuffle(females)
     random.shuffle(males)
     random.shuffle(others)
 
-    def assign_to_group(student, group):
+    def assign(student, group):
         student.group = group
-
         if hasattr(student, "setGroup"):
             student.setGroup(True)
-
         group_sizes[group] += 1
 
-    # ---------------------------------------------------------
-    # PASS 1:
-    # Ensure each group gets one female if possible
-    # ---------------------------------------------------------
+    # --------------------------------------------------
+    # DISTRIBUTE FEMALES EVENLY (1 per group first)
+    # --------------------------------------------------
 
-    groups_needing_female = [
-        g for g in all_target_groups
-        if female_counts[g] == 0
-    ]
-
-    for group in groups_needing_female:
-        if not females:
-            break
-
+    while females:
         student = females.pop()
 
-        assign_to_group(student, group)
-        female_counts[group] += 1
-
-    # ---------------------------------------------------------
-    # PASS 2:
-    # Distribute remaining females evenly
-    # ---------------------------------------------------------
-
-    for student in females:
-
-        target_group = min(
-            all_target_groups,
-            key=lambda g: (
-                female_counts[g],
-                group_sizes[g]
-            )
+        # Prioritize 0-female groups first (female_counts=0),
+        # then break ties by choosing the smallest total group size
+        target = min(
+            groups,
+            key=lambda g: (female_counts[g], group_sizes[g])
         )
 
-        assign_to_group(student, target_group)
-        female_counts[target_group] += 1
+        assign(student, target)
+        female_counts[target] += 1
 
-    # ---------------------------------------------------------
-    # PASS 3:
-    # Distribute males and others evenly
-    # ---------------------------------------------------------
+    # --------------------------------------------------
+    # DISTRIBUTE MALES + OTHERS EVENLY
+    # --------------------------------------------------
 
-    for student in males + others:
+    remaining = males + others
+    random.shuffle(remaining)
 
-        target_group = min(
-            all_target_groups,
+    for student in remaining:
+        target = min(
+            groups,
             key=lambda g: group_sizes[g]
         )
-
-        assign_to_group(student, target_group)
+        assign(student, target)
 
     session.commit()
 
-    return all_target_groups
+    return groups
