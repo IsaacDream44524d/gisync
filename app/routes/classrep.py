@@ -47,7 +47,7 @@ def groups():
         try:
             # 1. Parse & Assign students to groups
             groups_list = FormValidators.parse_group_names(raw_data)
-            assigned_groups = assign_students_to_groups(session, groups_list)
+            assigned_groups = assign_students_to_groups(db.session, groups_list)
 
             # 2. Automatically generate Excel & upload to Supabase (30-day signed URL)
             excel_buffer = generate_groups_excel_buffer(db.session)
